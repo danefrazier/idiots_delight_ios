@@ -28,11 +28,11 @@ class GameState {
         for i in 0..<4 {
             if canRemove(stackIndex: i).0 { return i }
         }
-        // Moveable ace
+        // Moveable ace — only hint if the ace has cards beneath it (sole ace has no best destination)
         let hasEmptyStack = stacks.contains { $0.isEmpty }
         if hasEmptyStack {
             for (i, stack) in stacks.enumerated() {
-                if let top = stack.last, top.isAce { return i }
+                if let top = stack.last, top.isAce, stack.count > 1 { return i }
             }
         }
         return nil
