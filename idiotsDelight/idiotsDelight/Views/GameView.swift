@@ -3,6 +3,7 @@ import SwiftUI
 struct GameView: View {
     @Bindable var game: GameState
     @State private var showStats = false
+    @State private var showAbout = false
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     private var isLandscape: Bool { verticalSizeClass == .compact }
@@ -32,6 +33,7 @@ struct GameView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: game.showAceKillerAlert)
         .sheet(isPresented: $showStats) { StatsView() }
+        .sheet(isPresented: $showAbout) { AboutView() }
     }
 
     // MARK: - Portrait
@@ -86,6 +88,10 @@ struct GameView: View {
                     Spacer()
                     Button(action: { showStats = true }) {
                         Image(systemName: "chart.bar.fill")
+                            .foregroundColor(.white.opacity(0.75))
+                    }
+                    Button(action: { showAbout = true }) {
+                        Image(systemName: "info.circle")
                             .foregroundColor(.white.opacity(0.75))
                     }
                 }
@@ -147,6 +153,12 @@ struct GameView: View {
                 .foregroundColor(.white.opacity(0.7))
             Button(action: { showStats = true }) {
                 Image(systemName: "chart.bar.fill")
+                    .font(.title3)
+                    .foregroundColor(.white.opacity(0.75))
+                    .padding(8)
+            }
+            Button(action: { showAbout = true }) {
+                Image(systemName: "info.circle")
                     .font(.title3)
                     .foregroundColor(.white.opacity(0.75))
                     .padding(8)
