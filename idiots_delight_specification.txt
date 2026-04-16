@@ -1,14 +1,14 @@
-Idiot's Delight — Game Specification
-======================================
+Idiot's Delight — iOS App Specification
+=========================================
 Date: 2026-04-16
-Version: 1.1 (added iOS/Swift port section)
+Version: 2.0 (reflects shipped implementation)
 
 1. Overview
 -----------
-Idiot's Delight is a single-player solitaire card game played with a
-standard 52-card deck. The player removes cards from four stacks
-according to suit-based rules and wins by leaving exactly one ace in
-each stack.
+Idiot's Delight is a single-player solitaire card game for iPhone (and
+iPad) built natively in Swift / SwiftUI. The player removes cards from
+four stacks according to suit-based rules and wins by leaving exactly
+one ace in each stack.
 
 2. Deck
 -------
@@ -16,256 +16,186 @@ each stack.
 - Suits: Spades, Clubs, Hearts, Diamonds.
 - Values (low to high): 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, King, Ace.
 - Aces are HIGH (numeric value 14, above King=13).
-- The deck is shuffled before play begins.
+- Deck is shuffled three times before the first deal.
 
 3. Setup
 --------
-- Four stacks are created, all initially empty.
-- The deck is shuffled three times before the first deal.
-- All cards are dealt face-up (all cards are always visible).
+- Four stacks, all initially empty.
+- Player taps "Deal Next Round" to begin.
+- All cards are always face-up.
 
 4. Game Structure
 -----------------
-The game proceeds in rounds. Each round:
-  a. One card is dealt from the top of the deck to each of the four
-     stacks (including empty stacks).
-  b. The player may perform any number of remove and ace-move actions
-     in any order.
-  c. The player presses 'd' to deal the next round when ready.
-
-There are at most 13 rounds (52 cards / 4 per round). If fewer than 4
-cards remain in the deck, only the remaining cards are dealt in the
-final round (one per stack, not padded with empty slots).
+The game proceeds in up to 13 rounds (52 cards / 4 per round).
+Each round: one card is dealt from the deck to each of the four stacks.
+The player performs remove / ace-move actions in any order, then taps
+"Deal Next Round" when ready.
 
 5. Player Actions
 -----------------
-During a round the player may:
+Remove a card
+  Player taps a non-ace stack top card.
+  Legal when ALL of the following are true:
+    i.   Stack is not empty.
+    ii.  Top card is not an ace.
+    iii. At least one other stack's top card shares the same suit.
+    iv.  At least one other showing card of the same suit has a higher
+         numeric value (relaxed rule: any lower card may be removed, not
+         just the strict lowest — see section 6).
 
-  Remove a card (keys 1-4)
-    Removes the top card of the selected stack.
-    This action is only legal when ALL of the following are true:
-      i.  The stack is not empty.
-      ii. The top card is not an ace.
-      iii.At least one other stack's top card shares the same suit.
-      iv. No other showing card of the same suit has a lower value
-          (i.e., the card being removed must be the lowest showing
-          card of its suit across all four stacks).
+Move an ace
+  Player taps a stack whose top card is an ace → stack enters
+  "selected" (highlighted) state.
+  Player then taps an empty stack → ace moves there.
+  Tapping the selected stack again deselects it.
+  Aces may only be moved to empty stacks.
 
-  Move an ace (key 'a')
-    Moves the top card of one stack to the top of another stack.
-    This action is only legal when ALL of the following are true:
-      i.  The source stack is not empty.
-      ii. The top card of the source stack is an ace.
-      iii.The destination stack is different from the source stack.
-    There is no restriction on which stack an ace may move to.
-    Aces may be moved multiple times in a round or across rounds.
+Deal next round
+  Player taps "Deal Next Round". Button is disabled when deck is empty
+  or game is over.
 
-  Deal next round (key 'd')
-    Ends the current round and deals four more cards.
-    If the deck is empty when 'd' is pressed, the game ends.
-
-  Quit (key 'x')
-    Exits the game immediately and reports the number of cards
-    remaining across all stacks and the deck.
+New Game
+  "New Game" button resets the full game state and reshuffles the deck.
 
 6. Removal Rule — Detail
 ------------------------
-"Lowest showing card of its suit" means:
+A card X may be removed if and only if:
+  - X is not an ace, AND
+  - At least one other visible top card shares X's suit, AND
+  - At least one other visible card of that suit has a strictly higher
+    numeric value than X.
 
-  Given the four top cards currently visible (one per non-empty stack),
-  a card X may be removed if and only if:
-    - X is not an ace, and
-    - At least one other visible card shares X's suit, and
-    - Every other visible card of X's suit has a numeric value
-      strictly greater than X's numeric value.
+This is a relaxed interpretation: the player may remove any non-ace
+showing card as long as a higher same-suit card is also showing. The
+player is NOT restricted to removing only the strict lowest of the suit.
 
-  Example: Hearts 5 (stack 1), Hearts 3 (stack 2), Hearts 9 (stack 3)
-    -> Hearts 3 is the lowest showing Heart; only stack 2 can be removed.
-    -> Stack 1 (Hearts 5) cannot be removed because Hearts 3 is lower.
-    -> Stack 3 (Hearts 9) cannot be removed because Hearts 3 and 5 are lower.
-
-  After removing Hearts 3, Hearts 5 becomes the new lowest Hearts.
-  Stack 1 may now be removed (Hearts 9 is still higher).
+Advisory (hint mode only): if a lower same-suit card is also showing,
+the status area displays a message suggesting the player consider the
+lower card instead.
 
 7. Win Condition
 ----------------
-The player wins when:
-  - All four stacks contain exactly one card, and
-  - That card is an ace (any suit).
+All four stacks contain exactly one card and that card is an ace (any
+suit). Aces need not be of different suits.
 
-There is no requirement that the aces be of different suits.
+8. Loss Conditions
+------------------
+a. Deck runs out during "Deal Next Round" — game over immediately.
+b. No legal moves remain AND the deck is empty — game over detected
+   automatically after any action or deal.
 
-8. Loss Condition
------------------
-The player loses when:
-  - The deck is empty and the player presses 'd' to deal, and
-  - The win condition has not been met.
+If no legal moves remain but the deck still has cards, the game waits
+silently; the player must deal the next round.
 
-9. Display
-----------
-After each deal and after each successful action, the game displays:
-  - The top card and total card count for each stack.
-  - The number of cards remaining in the deck.
+9. Ace Killer Detection
+-----------------------
+An "Ace Killer" occurs when a King lands directly on top of a same-suit
+Ace (e.g., King of Hearts on Ace of Hearts). The Ace is permanently
+buried — it can never be removed — making the win condition impossible
+to achieve for that suit stack.
 
-Stacks with no cards display as [empty] and still receive a card on
-the next deal.
+When an Ace Killer is detected:
+  - An overlay alert is displayed naming the suit.
+  - The player may choose "Keep Playing" or "Start Over".
+  - A crown badge appears on the affected stack column.
+  - The event is recorded in game statistics (hadAceKiller flag).
 
-10. Files
----------
-  card.py   — Card class. Stores suit and value. Provides numeric_val
-              property (int) for comparison and is_ace() boolean method.
+10. Hint Mode
+-------------
+A toggle switch in the header enables Hint Mode. When active:
+  - The best stack to tap is highlighted with a pulsing yellow glow
+    (1.6 s ease-in-out, repeating).
+  - Priority: optimal move (no advisory) > any legal move.
+  - Exception: if the only available move is to relocate an ace that is
+    alone in its stack, no hint is shown (the destination choice is
+    positional and up to the player).
+  - If a sub-optimal removal is available (a lower same-suit card
+    exists), the status message describes the advisory.
+  - Turning off hint mode stops the glow immediately (0.2 s ease-out).
 
-  deck.py   — Deck class. Builds 52-card deck, supports shuffle()
-              (Fisher-Yates via random.shuffle), drawOne() (LIFO pop),
-              and count().
+11. Game Statistics
+-------------------
+Tracked across all sessions (persisted via UserDefaults):
+  - Total games played
+  - Total wins / win percentage
+  - Best game (fewest cards remaining at loss, or 0 for a win)
+  - Total Ace Killer incidents
+  - Games with an Ace Killer that were still won
 
-  idiots.py — Game entry point. Initializes deck, manages four stacks
-              as a list, runs the round/action loop, enforces rules,
-              detects win/loss, and handles all player input.
+A Stats sheet (bar-chart icon in header) displays all statistics and
+offers a "Reset Stats" action with a two-button confirmation
+("No, Keep My Stats" / "Yes, Reset Everything — destructive role).
 
-11. Known Limitations / Future Work
+12. Orientation Support
+-----------------------
+Portrait
+  Stacked VStack layout. Card size 75×105 pt. Header shows title,
+  round counter, deck count, hints toggle, stats, and about buttons.
+  Status message below stacks. "Deal Next Round" button below message.
+  "New Game" button at bottom.
+
+Landscape (verticalSizeClass == .compact)
+  Three-column HStack layout.
+  Left panel (140 pt): title, round/deck info, hints toggle, stats/
+    about buttons, status message, New Game button.
+  Center: four stack columns with smaller cards (58×81 pt).
+  Right panel (130 pt): Deal Next Round button, centred vertically.
+
+13. About Screen
+----------------
+Sheet presented from the info-circle button in the header.
+Contains:
+  - Joker card illustration (transparent PNG, max 260 pt wide).
+  - "Idiot's Delight" title.
+  - "Developed by D. Frazier" credit line.
+  - Cabin story: "This game was taught by family friends while at a
+    cabin in the mountains on a weekend trip in the 1980s. This is an
+    homage to good times, and good friends."
+Background matches game green (0.1, 0.35, 0.14).
+
+14. File / Module Structure
+---------------------------
+idiotsDelight/
+  Models/
+    Card.swift       — Suit enum, CardValue enum, Card struct
+    Deck.swift       — 52-card build, triple shuffle, drawOne()
+    GameState.swift  — @Observable class; all rule logic and state
+    GameStats.swift  — GameStats Codable struct, StatsStore singleton
+  Views/
+    ContentView.swift      — @State GameState, root entry point
+    GameView.swift         — Portrait/landscape layout switcher
+    StackColumnView.swift  — Single stack column with crown badge
+    CardView.swift         — Card face with hint glow; EmptyStackView
+    AceKillerOverlay.swift — Full-screen modal for Ace Killer alert
+    StatsView.swift        — Statistics sheet
+    AboutView.swift        — About sheet with joker image
+  Assets.xcassets/
+    AppIcon.appiconset/
+    Joker.imageset/        — joker.png (transparent RGBA PNG, 1024×1036)
+
+15. Technical Notes
+-------------------
+- Swift 6, Xcode 26, iOS 26+ target.
+- SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor,
+  SWIFT_APPROACHABLE_CONCURRENCY = YES.
+- @Observable macro used throughout (not ObservableObject/@Published).
+- @Bindable for two-way bindings into GameState from GameView.
+- PBXFileSystemSynchronizedRootGroup: all Swift files auto-discovered;
+  no manual "Add Files to Xcode" step required.
+- Hint glow driven by @State pulsing + withAnimation(.repeatForever);
+  stopped via .onChange(of: isHinted) with explicit animation block.
+- EmptyStackView uses .contentShape(Rectangle()) for tap detection on
+  transparent interior.
+- Joker image background removed via Pillow edge flood-fill (grey ~106
+  RGB, tolerance 45) to produce transparent PNG.
+- Stats persisted under UserDefaults key "idiotsDelight.gameStats".
+- Simulator target: iPhone 17, iOS 26.4 (0322476A-BB89-417A-8131-3E3141119435).
+
+16. Known Limitations / Future Work
 ------------------------------------
-- No check that the player has made all possible removals before
-  dealing (the game allows dealing at any time).
-- No hint system to indicate which legal moves are available.
 - No undo functionality.
-- No persistent scoring or win/loss history.
-- Command-line only; no graphical interface.
-- No networked or multi-player variant.
-
-12. iOS Native Port — Swift / SwiftUI
---------------------------------------
-Target platform: iOS 17+, iPhone and iPad.
-Language: Swift 5.9+. UI framework: SwiftUI.
-
-12.1 Model Layer (direct port from Python)
-  Card (struct)
-    - suit: Suit (enum: spades, clubs, hearts, diamonds)
-    - value: CardValue (enum: two...ten, jack, queen, king, ace)
-    - numericValue: Int  (computed; ace = 14)
-    - isAce: Bool        (computed)
-
-  Deck (struct or class)
-    - cards: [Card]
-    - mutating func shuffle()    — Array.shuffle() built into Swift
-    - mutating func drawOne() -> Card?
-    - var count: Int
-
-  GameState (ObservableObject — the ViewModel)
-    - stacks: [[Card]]           (4 elements, index 0-3)
-    - deck: Deck
-    - roundNumber: Int
-    - phase: GamePhase (enum: playing, won, lost)
-    - func canRemove(stackIndex: Int) -> (Bool, String)
-    - func remove(stackIndex: Int)
-    - func canMoveAce(from: Int) -> Bool
-    - func moveAce(from: Int, to: Int)
-    - func dealRound()
-    - var isWon: Bool
-
-  All game rules from sections 5 and 6 are enforced inside GameState.
-  Views are read-only consumers of GameState; no rule logic lives in views.
-
-12.2 View Layer (SwiftUI)
-  ContentView
-    Root view. Hosts GameView or WinView/LoseView based on GameState.phase.
-
-  GameView
-    - HStack of four StackColumnView components
-    - DealButton ("Deal Next Round") — disabled when deck is empty
-    - RoundCounterView ("Round X of 13")
-    - DeckCountView ("X cards remaining")
-
-  StackColumnView
-    - Receives a binding to one stack ([Card])
-    - Displays CardView for the top card; card count badge for buried cards
-    - Tappable: first tap selects the stack, second tap acts (remove or
-      place ace depending on interaction mode)
-    - Empty stack shows a placeholder slot
-
-  CardView
-    - Rounded rectangle with suit symbol and value text
-    - Color: red for Hearts/Diamonds, black for Spades/Clubs
-    - Selected state shown with highlight border
-
-  AceMoveOverlay
-    - Appears when an ace is selected
-    - Prompts player to tap destination stack
-    - Cancel button to deselect
-
-  WinView / LoseView
-    - Full-screen overlay with result message and "Play Again" button
-
-12.3 Interaction Model (replacing keyboard input)
-  Remove a card:
-    - Player taps a stack. If canRemove() is true, card is removed
-      immediately with animation. If not, show inline error toast.
-
-  Move an ace:
-    - Player taps a stack whose top card is an ace → stack enters
-      "selected" state (highlighted).
-    - Player taps any other stack → ace moves there.
-    - Player taps the same stack or taps elsewhere → deselects.
-
-  Deal next round:
-    - Player taps "Deal Next Round" button.
-    - Button is disabled when deck is empty; on tap with empty deck
-      (should not occur) game transitions to lost state.
-
-  No ambiguity between remove and ace-select: if the top card is an
-  ace, tapping always enters ace-select mode. Non-ace taps always
-  attempt a remove.
-
-12.4 Animations
-  - Card deal: each card slides in from off-screen with staggered delay
-    (.animation with delay based on stack index).
-  - Card removal: card fades out and shrinks (.transition(.scale.combined(with: .opacity))).
-  - Ace move: card slides from source stack position to destination
-    (matchedGeometryEffect).
-  - Win: confetti or card fan animation; loss: cards grey out.
-
-12.5 Assets
-  Option A (fast): Programmatic cards using SF Symbols for suit icons
-    (suit.spade.fill, suit.club.fill, suit.heart.fill, suit.diamond.fill)
-    and Text for values. No external assets needed.
-  Option B (polished): License or use open-source card image assets
-    (e.g., Byron Knoll's public domain card set). Bundle as an Asset
-    Catalog in Xcode.
-
-12.6 File / Module Structure (Xcode project)
-  IdiotsDelight/
-    Models/
-      Card.swift
-      Deck.swift
-      GameState.swift
-    Views/
-      ContentView.swift
-      GameView.swift
-      StackColumnView.swift
-      CardView.swift
-      AceMoveOverlay.swift
-      WinView.swift
-      LoseView.swift
-    Resources/
-      Assets.xcassets    (app icon, card images if Option B)
-
-12.7 Development Effort Estimate
-  Model layer (Card, Deck, GameState)    1–2 days
-  Core views (GameView, StackColumnView, CardView)   3–5 days
-  Interaction model (tap logic, state machine)       2–3 days
-  Animations                                         2–4 days
-  Win/loss screens, polish                           1–2 days
-  Assets (Option A — programmatic)                   included above
-  Assets (Option B — card images)                    1 day
-  App icon, App Store screenshots, listing copy      1 day
-  TestFlight build + App Store submission            1 day
-  -------------------------------------------------------
-  Total (Option A assets):               ~11–18 days
-  Total (Option B assets):               ~12–19 days
-
-12.8 Prerequisites
-  - Mac with Xcode 15+ installed.
-  - Apple Developer Program membership ($99/yr) for device testing
-    and App Store submission.
-  - iOS device or simulator for testing.
-  - No third-party dependencies required for Option A.
+- No card deal animation (slide-in per stack).
+- No confetti / win animation.
+- No iPad-optimised split-view layout.
+- No iCloud sync for stats across devices.
+- No App Store submission completed.

@@ -1,0 +1,133 @@
+Idiot's Delight iOS — Build Summary
+=====================================
+Date: 2026-04-16
+
+This document summarises all features built and decisions made during
+the iOS port of Idiot's Delight (originally a Python CLI game).
+
+---
+
+Session 1 — Python CLI fixes (repo: idiots_delight)
+----------------------------------------------------
+Before porting, the Python version was fully repaired:
+  - Broken shuffle replaced with correct random.shuffle().
+  - Recursive game loop replaced with while loops (stack overflow fix).
+  - Removal rule enforced: lowest showing same-suit card only.
+  - Win condition added: four stacks each with exactly one ace.
+  - None cards in final round fixed (drawOne() return checked).
+  - Ace move validation added.
+
+---
+
+Session 2 — iOS Project Bootstrap
+-----------------------------------
+New repo: idiots_delight_ios
+Xcode 26 / Swift 6 project created targeting iOS 26+.
+Key framework decisions:
+  - @Observable macro (not ObservableObject) — required by Swift 6
+    with SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor.
+  - @Bindable for GameView bindings into GameState.
+  - PBXFileSystemSynchronizedRootGroup: files auto-discovered, no
+    manual "Add Files" step needed (caused "Multiple commands produce"
+    build error when attempted).
+  - Programmatic cards via SF Symbols + Text (no external card assets).
+
+Core models built:
+  Card.swift      — Suit, CardValue enums; Card struct; numericValue;
+                    isAce; displayString; suit color/symbol.
+  Deck.swift      — 52-card build, triple shuffle, drawOne(), count.
+  GameState.swift — All game logic: canRemove, tapStack, dealRound,
+                    performAceMove, checkWin, checkAvailableMoves.
+
+Core views built:
+  ContentView.swift     — root @State GameState.
+  GameView.swift        — header, stacks row, status, deal/new-game
+                          buttons.
+  StackColumnView.swift — single column; shows top card or empty slot.
+  CardView.swift        — rounded rect with suit symbol, value text,
+                          red/black colouring, selected highlight.
+  EmptyStackView.swift  — dashed border placeholder; .contentShape
+                          (Rectangle()) for tap detection.
+
+---
+
+Session 3 — Rule and UX Fixes
+-------------------------------
+Ace move restricted to empty stacks only (was: any stack).
+New Game button added (bottom of portrait layout).
+No-moves detection: auto game-over only when deck is also empty;
+  silently waits if cards remain in deck (no alert).
+
+---
+
+Session 4 — Hint Mode
+-----------------------
+Hints toggle (yellow) added to header.
+hintStackIndex computed: prefers optimal move (no advisory); falls
+  back to any legal move; suppresses lone-ace hint.
+CardView pulsing glow (1.6 s ease-in-out, repeatForever) driven by
+  @State pulsing + withAnimation.
+Glow stops cleanly on toggle-off via .onChange(of: isHinted) with
+  explicit 0.2 s ease-out animation block.
+
+Removal rule relaxed: any card lower than the highest showing same-suit
+  card is legal (not strict lowest-only). Advisory returned as a String
+  and shown in hint mode only. "Removed X of Y" message always shown.
+
+---
+
+Session 5 — Game Statistics + Ace Killer
+------------------------------------------
+GameStats.swift: wins, losses, bestGame, aceKillerCount, winsWithAceKiller.
+StatsStore singleton; persisted to UserDefaults ("idiotsDelight.gameStats").
+StatsView sheet: bar-chart icon in header.
+Reset confirmation buttons renamed: "No, Keep My Stats" /
+  "Yes, Reset Everything" (destructive/cancel roles + warning text).
+
+Ace Killer detection: King over same-suit Ace = permanent deadlock.
+AceKillerOverlay modal: names the suit, "Keep Playing" / "Start Over".
+Crown badge on affected StackColumnView.
+hadAceKiller flag tracked in stats.
+
+---
+
+Session 6 — About Screen
+--------------------------
+AboutView sheet: info-circle button in header.
+Joker card image displayed (transparent PNG, max 260 pt wide).
+"Idiot's Delight" title, "Developed by D. Frazier" credit.
+Cabin story text.
+Background matches game green (0.1, 0.35, 0.14).
+
+Three joker images processed (all were JPEG/WebP/PNG with baked-in
+opaque backgrounds). Background removed via Python Pillow edge
+flood-fill (corner colour sampling, tolerance 45) to produce
+transparent RGBA PNG saved to Joker.imageset/joker.png.
+
+---
+
+Session 7 — Landscape Support
+--------------------------------
+verticalSizeClass == .compact used to detect landscape orientation.
+Landscape layout: 3-column HStack.
+  Left (140 pt): title, round/deck info, hints, stats/about, status,
+    New Game.
+  Centre: stacks with smaller cards (58×81 pt vs portrait 75×105 pt).
+  Right (130 pt): Deal Next Round button.
+Portrait layout unchanged.
+
+---
+
+Current State
+-------------
+All features implemented and building successfully.
+No known crashes or rule violations.
+Stats persist across app launches.
+Portrait and landscape fully functional.
+About screen displays transparent joker illustration.
+
+Remaining work (not yet done):
+  - Card deal / removal animations beyond basic scale+opacity transition.
+  - Confetti or win animation.
+  - iPad layout optimisation.
+  - App Store submission.
