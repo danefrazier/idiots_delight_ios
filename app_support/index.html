@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Idiot's Delight — App Support</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #1a5a2e;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      background: rgba(0,0,0,0.25);
+      padding: 24px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    header img {
+      width: 120px;
+      height: auto;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.65);
+    }
+
+    main {
+      width: 100%;
+      max-width: 560px;
+      padding: 36px 24px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    section h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: rgba(255,255,255,0.9);
+    }
+
+    section p {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.75);
+    }
+
+    /* Contact form */
+    .card {
+      background: rgba(0,0,0,0.25);
+      border-radius: 14px;
+      padding: 28px 24px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.7);
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+      padding: 10px 12px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    textarea:focus {
+      border-color: rgba(255,255,255,0.5);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    /* Riddle captcha */
+    .riddle-box {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+
+    .riddle-box p {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+
+    .riddle-box .riddle-question {
+      font-weight: 600;
+      font-style: normal;
+      color: #fff;
+    }
+
+    .riddle-inline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .riddle-inline input {
+      width: 90px;
+    }
+
+    .riddle-feedback {
+      font-size: 0.82rem;
+      margin-top: 6px;
+      min-height: 18px;
+    }
+
+    .riddle-feedback.ok  { color: #7dffaa; }
+    .riddle-feedback.err { color: #ff8a8a; }
+
+    button[type="submit"] {
+      background: #2d7a45;
+      border: none;
+      border-radius: 50px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 13px 32px;
+      width: 100%;
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    button[type="submit"]:hover:not(:disabled) { background: #368f52; }
+    button[type="submit"]:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    footer {
+      padding: 20px;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="joker.png" alt="Idiot's Delight Joker" />
+  <h1>Idiot's Delight</h1>
+  <p>App Support</p>
+</header>
+
+<main>
+
+  <section>
+    <h2>About the Game</h2>
+    <p>Idiot's Delight is a classic solitaire card game. Deal four cards at a time, remove cards when a higher card of the same suit is showing, and win by leaving exactly one ace on each stack. Taught by family friends at a cabin in the mountains in the 1980s — an homage to good times and good friends.</p>
+  </section>
+
+  <section>
+    <h2>Frequently Asked Questions</h2>
+    <p><strong>How do I move an ace?</strong><br />Tap the ace to select it (it will highlight), then tap an empty stack to move it there.</p>
+    <br />
+    <p><strong>What is an Ace Killer?</strong><br />When a King of the same suit lands directly on top of an Ace, that Ace is permanently buried. The game alerts you immediately so you can start over if you wish.</p>
+    <br />
+    <p><strong>What does Hint Mode do?</strong><br />Toggle the Hints switch in the header. The best available move will pulse with a yellow glow.</p>
+    <br />
+    <p><strong>How do I reset my stats?</strong><br />Tap the bar chart icon → scroll to the bottom → Reset Stats.</p>
+  </section>
+
+  <section class="card">
+    <h2>Contact Support</h2>
+    <p style="margin-bottom:20px; font-size:0.88rem;">Answer the riddle below to unlock the send button.</p>
+
+    <form id="supportForm" autocomplete="off">
+      <div class="form-group">
+        <label for="userName">Your Name</label>
+        <input type="text" id="userName" name="name" placeholder="Jane Smith" required />
+      </div>
+
+      <div class="form-group">
+        <label for="userEmail">Your Email</label>
+        <input type="email" id="userEmail" name="email" placeholder="you@example.com" required />
+      </div>
+
+      <div class="form-group">
+        <label for="userMessage">Message</label>
+        <textarea id="userMessage" name="message" placeholder="Describe your issue or question…" required></textarea>
+      </div>
+
+      <div class="riddle-box">
+        <p class="riddle-question" id="riddleQuestion"></p>
+        <div class="riddle-inline">
+          <input type="text" id="riddleAnswer" inputmode="numeric" placeholder="?" autocomplete="off" />
+        </div>
+        <div class="riddle-feedback" id="riddleFeedback"></div>
+      </div>
+
+      <button type="submit" id="submitBtn" disabled>Open Mail Client</button>
+    </form>
+  </section>
+
+</main>
+
+<footer>
+  &copy; 2026 D. Frazier &nbsp;·&nbsp; Idiot's Delight for iOS
+</footer>
+
+<script>
+  // ---------------------------------------------------------------------------
+  // Riddle bank — mnemonic math riddles
+  // ---------------------------------------------------------------------------
+  const riddles = [
+    {
+      question: "8 × 8 fell on the floor, picked it up and it was…",
+      answer: 64
+    },
+    {
+      question: "A dozen eggs plus a dozen more — how many in all?",
+      answer: 24
+    },
+    {
+      question: "A deck of cards has 4 suits of 13 each — total cards?",
+      answer: 52
+    },
+    {
+      question: "A baker's dozen minus 6 — what's left?",
+      answer: 7
+    },
+    {
+      question: "Seven days in a week, times four weeks — how many days?",
+      answer: 28
+    },
+    {
+      question: "The number of keys on a piano — 36 black, how many white?",
+      answer: 52
+    },
+    {
+      question: "Three quarters and a dime — how many cents?",
+      answer: 85
+    },
+    {
+      question: "Sixty seconds in a minute — how many in three minutes?",
+      answer: 180
+    }
+  ];
+
+  // Pick a random riddle each page load
+  const riddle = riddles[Math.floor(Math.random() * riddles.length)];
+  document.getElementById("riddleQuestion").textContent = riddle.question;
+
+  // ---------------------------------------------------------------------------
+  // Validate riddle answer
+  // ---------------------------------------------------------------------------
+  let riddleSolved = false;
+
+  document.getElementById("riddleAnswer").addEventListener("input", function () {
+    const val = parseInt(this.value.trim(), 10);
+    const feedback = document.getElementById("riddleFeedback");
+    const btn = document.getElementById("submitBtn");
+
+    if (val === riddle.answer) {
+      riddleSolved = true;
+      feedback.textContent = "Correct!";
+      feedback.className = "riddle-feedback ok";
+      btn.disabled = false;
+    } else {
+      riddleSolved = false;
+      feedback.textContent = this.value.trim() ? "Not quite — try again." : "";
+      feedback.className = "riddle-feedback err";
+      btn.disabled = true;
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // Build mailto: and open mail client on submit
+  // ---------------------------------------------------------------------------
+  document.getElementById("supportForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!riddleSolved) return;
+
+    const name    = document.getElementById("userName").value.trim();
+    const email   = document.getElementById("userEmail").value.trim();
+    const message = document.getElementById("userMessage").value.trim();
+
+    // Assemble target address from parts — keeps plain address out of markup
+    const u = ["dane", "appsupport"].join("+");
+    const d = ["danefrazier", "com"].join(".");
+    const to = u + "@" + d;
+
+    const subject = encodeURIComponent("Idiot's Delight Support");
+    const body = encodeURIComponent(
+      "Name: " + name + "\n" +
+      "Email: " + email + "\n\n" +
+      message
+    );
+
+    window.location.href = "mailto:" + to + "?subject=" + subject + "&body=" + body;
+  });
+</script>
+
+</body>
+</html>
