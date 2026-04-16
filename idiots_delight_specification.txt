@@ -1,0 +1,271 @@
+Idiot's Delight — Game Specification
+======================================
+Date: 2026-04-16
+Version: 1.1 (added iOS/Swift port section)
+
+1. Overview
+-----------
+Idiot's Delight is a single-player solitaire card game played with a
+standard 52-card deck. The player removes cards from four stacks
+according to suit-based rules and wins by leaving exactly one ace in
+each stack.
+
+2. Deck
+-------
+- Standard 52-card deck; no jokers.
+- Suits: Spades, Clubs, Hearts, Diamonds.
+- Values (low to high): 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, King, Ace.
+- Aces are HIGH (numeric value 14, above King=13).
+- The deck is shuffled before play begins.
+
+3. Setup
+--------
+- Four stacks are created, all initially empty.
+- The deck is shuffled three times before the first deal.
+- All cards are dealt face-up (all cards are always visible).
+
+4. Game Structure
+-----------------
+The game proceeds in rounds. Each round:
+  a. One card is dealt from the top of the deck to each of the four
+     stacks (including empty stacks).
+  b. The player may perform any number of remove and ace-move actions
+     in any order.
+  c. The player presses 'd' to deal the next round when ready.
+
+There are at most 13 rounds (52 cards / 4 per round). If fewer than 4
+cards remain in the deck, only the remaining cards are dealt in the
+final round (one per stack, not padded with empty slots).
+
+5. Player Actions
+-----------------
+During a round the player may:
+
+  Remove a card (keys 1-4)
+    Removes the top card of the selected stack.
+    This action is only legal when ALL of the following are true:
+      i.  The stack is not empty.
+      ii. The top card is not an ace.
+      iii.At least one other stack's top card shares the same suit.
+      iv. No other showing card of the same suit has a lower value
+          (i.e., the card being removed must be the lowest showing
+          card of its suit across all four stacks).
+
+  Move an ace (key 'a')
+    Moves the top card of one stack to the top of another stack.
+    This action is only legal when ALL of the following are true:
+      i.  The source stack is not empty.
+      ii. The top card of the source stack is an ace.
+      iii.The destination stack is different from the source stack.
+    There is no restriction on which stack an ace may move to.
+    Aces may be moved multiple times in a round or across rounds.
+
+  Deal next round (key 'd')
+    Ends the current round and deals four more cards.
+    If the deck is empty when 'd' is pressed, the game ends.
+
+  Quit (key 'x')
+    Exits the game immediately and reports the number of cards
+    remaining across all stacks and the deck.
+
+6. Removal Rule — Detail
+------------------------
+"Lowest showing card of its suit" means:
+
+  Given the four top cards currently visible (one per non-empty stack),
+  a card X may be removed if and only if:
+    - X is not an ace, and
+    - At least one other visible card shares X's suit, and
+    - Every other visible card of X's suit has a numeric value
+      strictly greater than X's numeric value.
+
+  Example: Hearts 5 (stack 1), Hearts 3 (stack 2), Hearts 9 (stack 3)
+    -> Hearts 3 is the lowest showing Heart; only stack 2 can be removed.
+    -> Stack 1 (Hearts 5) cannot be removed because Hearts 3 is lower.
+    -> Stack 3 (Hearts 9) cannot be removed because Hearts 3 and 5 are lower.
+
+  After removing Hearts 3, Hearts 5 becomes the new lowest Hearts.
+  Stack 1 may now be removed (Hearts 9 is still higher).
+
+7. Win Condition
+----------------
+The player wins when:
+  - All four stacks contain exactly one card, and
+  - That card is an ace (any suit).
+
+There is no requirement that the aces be of different suits.
+
+8. Loss Condition
+-----------------
+The player loses when:
+  - The deck is empty and the player presses 'd' to deal, and
+  - The win condition has not been met.
+
+9. Display
+----------
+After each deal and after each successful action, the game displays:
+  - The top card and total card count for each stack.
+  - The number of cards remaining in the deck.
+
+Stacks with no cards display as [empty] and still receive a card on
+the next deal.
+
+10. Files
+---------
+  card.py   — Card class. Stores suit and value. Provides numeric_val
+              property (int) for comparison and is_ace() boolean method.
+
+  deck.py   — Deck class. Builds 52-card deck, supports shuffle()
+              (Fisher-Yates via random.shuffle), drawOne() (LIFO pop),
+              and count().
+
+  idiots.py — Game entry point. Initializes deck, manages four stacks
+              as a list, runs the round/action loop, enforces rules,
+              detects win/loss, and handles all player input.
+
+11. Known Limitations / Future Work
+------------------------------------
+- No check that the player has made all possible removals before
+  dealing (the game allows dealing at any time).
+- No hint system to indicate which legal moves are available.
+- No undo functionality.
+- No persistent scoring or win/loss history.
+- Command-line only; no graphical interface.
+- No networked or multi-player variant.
+
+12. iOS Native Port — Swift / SwiftUI
+--------------------------------------
+Target platform: iOS 17+, iPhone and iPad.
+Language: Swift 5.9+. UI framework: SwiftUI.
+
+12.1 Model Layer (direct port from Python)
+  Card (struct)
+    - suit: Suit (enum: spades, clubs, hearts, diamonds)
+    - value: CardValue (enum: two...ten, jack, queen, king, ace)
+    - numericValue: Int  (computed; ace = 14)
+    - isAce: Bool        (computed)
+
+  Deck (struct or class)
+    - cards: [Card]
+    - mutating func shuffle()    — Array.shuffle() built into Swift
+    - mutating func drawOne() -> Card?
+    - var count: Int
+
+  GameState (ObservableObject — the ViewModel)
+    - stacks: [[Card]]           (4 elements, index 0-3)
+    - deck: Deck
+    - roundNumber: Int
+    - phase: GamePhase (enum: playing, won, lost)
+    - func canRemove(stackIndex: Int) -> (Bool, String)
+    - func remove(stackIndex: Int)
+    - func canMoveAce(from: Int) -> Bool
+    - func moveAce(from: Int, to: Int)
+    - func dealRound()
+    - var isWon: Bool
+
+  All game rules from sections 5 and 6 are enforced inside GameState.
+  Views are read-only consumers of GameState; no rule logic lives in views.
+
+12.2 View Layer (SwiftUI)
+  ContentView
+    Root view. Hosts GameView or WinView/LoseView based on GameState.phase.
+
+  GameView
+    - HStack of four StackColumnView components
+    - DealButton ("Deal Next Round") — disabled when deck is empty
+    - RoundCounterView ("Round X of 13")
+    - DeckCountView ("X cards remaining")
+
+  StackColumnView
+    - Receives a binding to one stack ([Card])
+    - Displays CardView for the top card; card count badge for buried cards
+    - Tappable: first tap selects the stack, second tap acts (remove or
+      place ace depending on interaction mode)
+    - Empty stack shows a placeholder slot
+
+  CardView
+    - Rounded rectangle with suit symbol and value text
+    - Color: red for Hearts/Diamonds, black for Spades/Clubs
+    - Selected state shown with highlight border
+
+  AceMoveOverlay
+    - Appears when an ace is selected
+    - Prompts player to tap destination stack
+    - Cancel button to deselect
+
+  WinView / LoseView
+    - Full-screen overlay with result message and "Play Again" button
+
+12.3 Interaction Model (replacing keyboard input)
+  Remove a card:
+    - Player taps a stack. If canRemove() is true, card is removed
+      immediately with animation. If not, show inline error toast.
+
+  Move an ace:
+    - Player taps a stack whose top card is an ace → stack enters
+      "selected" state (highlighted).
+    - Player taps any other stack → ace moves there.
+    - Player taps the same stack or taps elsewhere → deselects.
+
+  Deal next round:
+    - Player taps "Deal Next Round" button.
+    - Button is disabled when deck is empty; on tap with empty deck
+      (should not occur) game transitions to lost state.
+
+  No ambiguity between remove and ace-select: if the top card is an
+  ace, tapping always enters ace-select mode. Non-ace taps always
+  attempt a remove.
+
+12.4 Animations
+  - Card deal: each card slides in from off-screen with staggered delay
+    (.animation with delay based on stack index).
+  - Card removal: card fades out and shrinks (.transition(.scale.combined(with: .opacity))).
+  - Ace move: card slides from source stack position to destination
+    (matchedGeometryEffect).
+  - Win: confetti or card fan animation; loss: cards grey out.
+
+12.5 Assets
+  Option A (fast): Programmatic cards using SF Symbols for suit icons
+    (suit.spade.fill, suit.club.fill, suit.heart.fill, suit.diamond.fill)
+    and Text for values. No external assets needed.
+  Option B (polished): License or use open-source card image assets
+    (e.g., Byron Knoll's public domain card set). Bundle as an Asset
+    Catalog in Xcode.
+
+12.6 File / Module Structure (Xcode project)
+  IdiotsDelight/
+    Models/
+      Card.swift
+      Deck.swift
+      GameState.swift
+    Views/
+      ContentView.swift
+      GameView.swift
+      StackColumnView.swift
+      CardView.swift
+      AceMoveOverlay.swift
+      WinView.swift
+      LoseView.swift
+    Resources/
+      Assets.xcassets    (app icon, card images if Option B)
+
+12.7 Development Effort Estimate
+  Model layer (Card, Deck, GameState)    1–2 days
+  Core views (GameView, StackColumnView, CardView)   3–5 days
+  Interaction model (tap logic, state machine)       2–3 days
+  Animations                                         2–4 days
+  Win/loss screens, polish                           1–2 days
+  Assets (Option A — programmatic)                   included above
+  Assets (Option B — card images)                    1 day
+  App icon, App Store screenshots, listing copy      1 day
+  TestFlight build + App Store submission            1 day
+  -------------------------------------------------------
+  Total (Option A assets):               ~11–18 days
+  Total (Option B assets):               ~12–19 days
+
+12.8 Prerequisites
+  - Mac with Xcode 15+ installed.
+  - Apple Developer Program membership ($99/yr) for device testing
+    and App Store submission.
+  - iOS device or simulator for testing.
+  - No third-party dependencies required for Option A.
