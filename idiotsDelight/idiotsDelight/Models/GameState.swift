@@ -20,6 +20,9 @@ class GameState {
     private(set) var hadAceKiller: Bool
     var showAceKillerAlert: Bool
 
+    // No-moves alert
+    var showNoMovesAlert: Bool
+
     init() {
         stacks = [[], [], [], []]
         deck = Deck()
@@ -31,6 +34,7 @@ class GameState {
         aceKillerSuit = nil
         hadAceKiller = false
         showAceKillerAlert = false
+        showNoMovesAlert = false
         dealRound()
     }
 
@@ -45,11 +49,27 @@ class GameState {
         aceKillerSuit = nil
         hadAceKiller = false
         showAceKillerAlert = false
+        showNoMovesAlert = false
         dealRound()
     }
 
     func dismissAceKillerAlert() {
         showAceKillerAlert = false
+    }
+
+    // MARK: - Available moves
+
+    var hasAvailableMoves: Bool {
+        for i in 0..<4 {
+            if canRemove(stackIndex: i).0 { return true }
+        }
+        let hasEmptyStack = stacks.contains { $0.isEmpty }
+        if hasEmptyStack {
+            for stack in stacks {
+                if let top = stack.last, top.isAce { return true }
+            }
+        }
+        return false
     }
 
     // MARK: - Win check
@@ -107,6 +127,7 @@ class GameState {
                 let removed = stacks[index].removeLast()
                 lastMessage = "Removed \(removed.displayString)"
                 checkWin()
+                checkAvailableMoves()
             } else {
                 lastMessage = msg
             }
@@ -135,6 +156,7 @@ class GameState {
         lastMessage = "Round \(roundNumber) of 13 — \(deck.count) cards remaining"
         checkAceKiller()
         checkWin()
+        checkAvailableMoves()
     }
 
     // MARK: - Private helpers
@@ -154,12 +176,25 @@ class GameState {
         selectedStack = nil
         lastMessage = "Moved \(card.displayString) to stack \(to + 1)"
         checkWin()
+        checkAvailableMoves()
     }
 
     private func checkWin() {
         if isWon {
             phase = .won
             StatsStore.shared.recordWin()
+        }
+    }
+
+    private func checkAvailableMoves() {
+        guard phase == .playing else { return }
+        guard !hasAvailableMoves else { return }
+        if deck.count == 0 {
+            phase = .lost
+            let remaining = stacks.reduce(0) { $0 + $1.count }
+            StatsStore.shared.recordLoss(cardsRemaining: remaining, hadAceKiller: hadAceKiller)
+        } else {
+            showNoMovesAlert = true
         }
     }
 

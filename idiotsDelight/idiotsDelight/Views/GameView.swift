@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct GameView: View {
-    var game: GameState
+    @Bindable var game: GameState
     @State private var showStats = false
 
     var body: some View {
@@ -98,6 +98,12 @@ struct GameView: View {
         .animation(.easeInOut(duration: 0.3), value: game.showAceKillerAlert)
         .sheet(isPresented: $showStats) {
             StatsView()
+        }
+        .alert("No Further Plays", isPresented: $game.showNoMovesAlert) {
+            Button("Deal Next Round") { game.dealRound() }
+            Button("New Game", role: .destructive) { game.reset() }
+        } message: {
+            Text("There are no valid moves available. Deal the next round or start a new game.")
         }
     }
 }
