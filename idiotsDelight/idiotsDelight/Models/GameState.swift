@@ -155,11 +155,7 @@ class GameState {
             let (ok, advisory) = canRemove(stackIndex: index)
             if ok {
                 let removed = stacks[index].removeLast()
-                if hintMode && !advisory.isEmpty {
-                    lastMessage = advisory
-                } else {
-                    lastMessage = "Removed \(removed.displayString)"
-                }
+                lastMessage = "Removed \(removed.displayString)"
                 checkWin()
                 checkAvailableMoves()
             } else {
