@@ -22,6 +22,13 @@ struct GameView: View {
                             .foregroundColor(.white.opacity(0.65))
                     }
                     Spacer()
+                    Toggle("Hints", isOn: $game.hintMode)
+                        .toggleStyle(.switch)
+                        .tint(.yellow)
+                        .labelsHidden()
+                    Text("Hints")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
                     Button(action: { showStats = true }) {
                         Image(systemName: "chart.bar.fill")
                             .font(.title3)
@@ -39,6 +46,7 @@ struct GameView: View {
                             stackIndex: i,
                             stack: game.stacks[i],
                             isSelected: game.selectedStack == i,
+                            isHinted: game.hintStackIndex == i,
                             isAceKiller: game.aceKillerStacks.contains(i),
                             onTap: { game.tapStack(i) }
                         )

@@ -4,6 +4,7 @@ struct StackColumnView: View {
     let stackIndex: Int
     let stack: [Card]
     let isSelected: Bool
+    let isHinted: Bool
     let isAceKiller: Bool
     let onTap: () -> Void
 
@@ -16,7 +17,7 @@ struct StackColumnView: View {
             Button(action: onTap) {
                 ZStack(alignment: .bottomTrailing) {
                     if let top = stack.last {
-                        CardView(card: top, isSelected: isSelected)
+                        CardView(card: top, isSelected: isSelected, isHinted: isHinted)
                             .transition(.scale.combined(with: .opacity))
                     } else {
                         EmptyStackView()

@@ -14,6 +14,23 @@ class GameState {
     private(set) var selectedStack: Int?
     private(set) var lastMessage: String
 
+    // Hint mode
+    var hintMode: Bool = false
+
+    var hintStackIndex: Int? {
+        guard hintMode else { return nil }
+        for i in 0..<4 {
+            if canRemove(stackIndex: i).0 { return i }
+        }
+        let hasEmptyStack = stacks.contains { $0.isEmpty }
+        if hasEmptyStack {
+            for (i, stack) in stacks.enumerated() {
+                if let top = stack.last, top.isAce { return i }
+            }
+        }
+        return nil
+    }
+
     // Ace killer state
     private(set) var aceKillerStacks: Set<Int>
     private(set) var aceKillerSuit: Suit?

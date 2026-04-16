@@ -3,18 +3,30 @@ import SwiftUI
 struct CardView: View {
     let card: Card
     var isSelected: Bool = false
+    var isHinted: Bool = false
+
+    private var borderColor: Color {
+        if isSelected { return .blue }
+        if isHinted   { return .yellow }
+        return .gray.opacity(0.3)
+    }
+
+    private var borderWidth: CGFloat {
+        isSelected || isHinted ? 3 : 1
+    }
 
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10)
                 .fill(.white)
-                .shadow(color: .black.opacity(0.25), radius: 4, x: 1, y: 2)
+                .shadow(
+                    color: isHinted ? .yellow.opacity(0.7) : .black.opacity(0.25),
+                    radius: isHinted ? 8 : 4,
+                    x: 1, y: 2
+                )
 
             RoundedRectangle(cornerRadius: 10)
-                .strokeBorder(
-                    isSelected ? Color.blue : Color.gray.opacity(0.3),
-                    lineWidth: isSelected ? 3 : 1
-                )
+                .strokeBorder(borderColor, lineWidth: borderWidth)
 
             VStack(spacing: 4) {
                 Text(card.value.displayString)
@@ -27,6 +39,7 @@ struct CardView: View {
         .frame(width: 75, height: 105)
         .scaleEffect(isSelected ? 1.06 : 1.0)
         .animation(.spring(duration: 0.2), value: isSelected)
+        .animation(.easeInOut(duration: 0.4).repeatForever(autoreverses: true), value: isHinted)
     }
 }
 
