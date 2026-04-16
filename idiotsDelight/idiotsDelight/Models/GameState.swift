@@ -19,9 +19,16 @@ class GameState {
 
     var hintStackIndex: Int? {
         guard hintMode else { return nil }
+        // Prefer optimal move (lowest of suit — no advisory)
+        for i in 0..<4 {
+            let (ok, advisory) = canRemove(stackIndex: i)
+            if ok && advisory.isEmpty { return i }
+        }
+        // Fall back to any legal move
         for i in 0..<4 {
             if canRemove(stackIndex: i).0 { return i }
         }
+        // Moveable ace
         let hasEmptyStack = stacks.contains { $0.isEmpty }
         if hasEmptyStack {
             for (i, stack) in stacks.enumerated() {
@@ -95,6 +102,9 @@ class GameState {
 
     // MARK: - Removal validation
 
+    // Returns (legal, advisory).
+    // legal=false means the move is not allowed.
+    // legal=true with non-empty advisory means allowed but not optimal (hint mode shows advisory).
     func canRemove(stackIndex: Int) -> (Bool, String) {
         guard let card = stacks[stackIndex].last else {
             return (false, "No card in this stack")
@@ -109,9 +119,14 @@ class GameState {
         guard !sameSuit.isEmpty else {
             return (false, "No other \(card.suit.rawValue) showing")
         }
+        // Legal if at least one same-suit card showing is higher
+        guard sameSuit.contains(where: { $0.value.numericValue > card.value.numericValue }) else {
+            return (false, "\(card.displayString) is the highest \(card.suit.rawValue) showing — cannot remove")
+        }
+        // Advisory: a lower same-suit card is also showing (not the optimal move)
         if let lower = sameSuit.filter({ $0.value.numericValue < card.value.numericValue })
             .min(by: { $0.value.numericValue < $1.value.numericValue }) {
-            return (false, "\(card.displayString) is not lowest — \(lower.displayString) is lower")
+            return (true, "\(card.displayString) is a legal move, but \(lower.displayString) is lower — you may want to consider that card")
         }
         return (true, "")
     }
@@ -137,14 +152,18 @@ class GameState {
             selectedStack = index
             lastMessage = "\(card.displayString) selected — tap an empty stack to move"
         } else {
-            let (ok, msg) = canRemove(stackIndex: index)
+            let (ok, advisory) = canRemove(stackIndex: index)
             if ok {
                 let removed = stacks[index].removeLast()
-                lastMessage = "Removed \(removed.displayString)"
+                if hintMode && !advisory.isEmpty {
+                    lastMessage = advisory
+                } else {
+                    lastMessage = "Removed \(removed.displayString)"
+                }
                 checkWin()
                 checkAvailableMoves()
             } else {
-                lastMessage = msg
+                lastMessage = advisory
             }
         }
     }
