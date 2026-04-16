@@ -6,10 +6,11 @@ struct StackColumnView: View {
     let isSelected: Bool
     let isHinted: Bool
     let isAceKiller: Bool
+    let cardSize: CGSize
     let onTap: () -> Void
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 6) {
             Text("Stack \(stackIndex + 1)")
                 .font(.caption)
                 .foregroundColor(.white.opacity(0.75))
@@ -17,10 +18,10 @@ struct StackColumnView: View {
             Button(action: onTap) {
                 ZStack(alignment: .bottomTrailing) {
                     if let top = stack.last {
-                        CardView(card: top, isSelected: isSelected, isHinted: isHinted)
+                        CardView(card: top, isSelected: isSelected, isHinted: isHinted, size: cardSize)
                             .transition(.scale.combined(with: .opacity))
                     } else {
-                        EmptyStackView()
+                        EmptyStackView(size: cardSize)
                     }
 
                     if isAceKiller {

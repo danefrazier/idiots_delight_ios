@@ -4,6 +4,7 @@ struct CardView: View {
     let card: Card
     var isSelected: Bool = false
     var isHinted: Bool = false
+    var size: CGSize = CGSize(width: 75, height: 105)
 
     @State private var pulsing = false
 
@@ -32,13 +33,13 @@ struct CardView: View {
 
             VStack(spacing: 4) {
                 Text(card.value.displayString)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.system(size: size.width * 0.32, weight: .bold, design: .rounded))
                 Image(systemName: card.suit.symbol)
-                    .font(.system(size: 20))
+                    .font(.system(size: size.width * 0.27))
             }
             .foregroundColor(card.suit.isRed ? .red : .black)
         }
-        .frame(width: 75, height: 105)
+        .frame(width: size.width, height: size.height)
         .scaleEffect(isSelected ? 1.06 : 1.0)
         .animation(.spring(duration: 0.2), value: isSelected)
         .onChange(of: isHinted) { _, hinted in
@@ -63,13 +64,15 @@ struct CardView: View {
 }
 
 struct EmptyStackView: View {
+    var size: CGSize = CGSize(width: 75, height: 105)
+
     var body: some View {
         RoundedRectangle(cornerRadius: 10)
             .strokeBorder(
                 Color.white.opacity(0.35),
                 style: StrokeStyle(lineWidth: 2, dash: [6])
             )
-            .frame(width: 75, height: 105)
+            .frame(width: size.width, height: size.height)
             .contentShape(Rectangle())
     }
 }
