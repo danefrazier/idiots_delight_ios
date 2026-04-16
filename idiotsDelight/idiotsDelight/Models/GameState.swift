@@ -219,9 +219,14 @@ class GameState {
     private func checkAvailableMoves() {
         guard phase == .playing else { return }
         guard !hasAvailableMoves && deck.count == 0 else { return }
-        phase = .lost
-        let remaining = stacks.reduce(0) { $0 + $1.count }
-        StatsStore.shared.recordLoss(cardsRemaining: remaining, hadAceKiller: hadAceKiller)
+        lastMessage = "No further moves — game over"
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(3))
+            guard phase == .playing else { return }
+            phase = .lost
+            let remaining = stacks.reduce(0) { $0 + $1.count }
+            StatsStore.shared.recordLoss(cardsRemaining: remaining, hadAceKiller: hadAceKiller)
+        }
     }
 
     private func checkAceKiller() {
