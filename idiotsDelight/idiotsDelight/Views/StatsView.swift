@@ -38,12 +38,14 @@ struct StatsView: View {
                             .foregroundColor(.red.opacity(0.75))
                     }
                     .padding(.bottom, 32)
-                    .confirmationDialog("Reset all stats?", isPresented: $showResetConfirm, titleVisibility: .visible) {
-                        Button("Reset", role: .destructive) {
+                    .confirmationDialog("Reset All Stats?", isPresented: $showResetConfirm, titleVisibility: .visible) {
+                        Button("No, Keep My Stats", role: .cancel) {}
+                        Button("Yes, Reset Everything", role: .destructive) {
                             StatsStore.shared.resetStats()
                             stats = StatsStore.shared.load()
                         }
-                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("This will permanently erase all game history. This cannot be undone.")
                     }
                 }
                 .padding(.top, 16)
