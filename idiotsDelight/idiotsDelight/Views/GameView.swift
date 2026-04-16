@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct GameView: View {
-    @ObservedObject var game: GameState
+    var game: GameState
 
     var body: some View {
         ZStack {

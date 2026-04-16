@@ -1,16 +1,18 @@
 import Foundation
+import Observation
 
 enum GamePhase {
     case playing, won, lost
 }
 
-class GameState: ObservableObject {
-    @Published private(set) var stacks: [[Card]]
-    @Published private(set) var deck: Deck
-    @Published private(set) var roundNumber: Int
-    @Published private(set) var phase: GamePhase
-    @Published private(set) var selectedStack: Int?
-    @Published private(set) var lastMessage: String
+@Observable
+class GameState {
+    private(set) var stacks: [[Card]]
+    private(set) var deck: Deck
+    private(set) var roundNumber: Int
+    private(set) var phase: GamePhase
+    private(set) var selectedStack: Int?
+    private(set) var lastMessage: String
 
     init() {
         stacks = [[], [], [], []]

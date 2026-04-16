@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LoseView: View {
-    @ObservedObject var game: GameState
+    var game: GameState
 
     var body: some View {
         ZStack {
