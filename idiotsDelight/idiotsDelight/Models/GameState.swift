@@ -14,6 +14,12 @@ class GameState {
     private(set) var selectedStack: Int?
     private(set) var lastMessage: String
 
+    // Ace killer state
+    private(set) var aceKillerStacks: Set<Int>
+    private(set) var aceKillerSuit: Suit?
+    private(set) var hadAceKiller: Bool
+    var showAceKillerAlert: Bool
+
     init() {
         stacks = [[], [], [], []]
         deck = Deck()
@@ -21,6 +27,10 @@ class GameState {
         phase = .playing
         selectedStack = nil
         lastMessage = ""
+        aceKillerStacks = []
+        aceKillerSuit = nil
+        hadAceKiller = false
+        showAceKillerAlert = false
         dealRound()
     }
 
@@ -31,7 +41,15 @@ class GameState {
         phase = .playing
         selectedStack = nil
         lastMessage = ""
+        aceKillerStacks = []
+        aceKillerSuit = nil
+        hadAceKiller = false
+        showAceKillerAlert = false
         dealRound()
+    }
+
+    func dismissAceKillerAlert() {
+        showAceKillerAlert = false
     }
 
     // MARK: - Win check
@@ -56,13 +74,14 @@ class GameState {
         guard !sameSuit.isEmpty else {
             return (false, "No other \(card.suit.rawValue) showing")
         }
-        if let lower = sameSuit.filter({ $0.value.numericValue < card.value.numericValue }).min(by: { $0.value.numericValue < $1.value.numericValue }) {
+        if let lower = sameSuit.filter({ $0.value.numericValue < card.value.numericValue })
+            .min(by: { $0.value.numericValue < $1.value.numericValue }) {
             return (false, "\(card.displayString) is not lowest — \(lower.displayString) is lower")
         }
         return (true, "")
     }
 
-    // MARK: - Tap handler (single entry point for all stack taps)
+    // MARK: - Tap handler
 
     func tapStack(_ index: Int) {
         guard phase == .playing else { return }
@@ -70,7 +89,6 @@ class GameState {
         let topCard = stacks[index].last
 
         if let from = selectedStack {
-            // An ace is already selected
             if from == index {
                 selectedStack = nil
                 lastMessage = ""
@@ -103,6 +121,8 @@ class GameState {
         guard deck.count > 0 else {
             phase = .lost
             lastMessage = "No cards left — game over"
+            let remaining = stacks.reduce(0) { $0 + $1.count }
+            StatsStore.shared.recordLoss(cardsRemaining: remaining, hadAceKiller: hadAceKiller)
             return
         }
         roundNumber += 1
@@ -113,6 +133,7 @@ class GameState {
             }
         }
         lastMessage = "Round \(roundNumber) of 13 — \(deck.count) cards remaining"
+        checkAceKiller()
         checkWin()
     }
 
@@ -132,6 +153,35 @@ class GameState {
     }
 
     private func checkWin() {
-        if isWon { phase = .won }
+        if isWon {
+            phase = .won
+            StatsStore.shared.recordWin()
+        }
+    }
+
+    private func checkAceKiller() {
+        var newKillerStacks = Set<Int>()
+        var newKillerSuit: Suit?
+
+        for (i, stack) in stacks.enumerated() {
+            guard stack.count >= 2 else { continue }
+            let top = stack[stack.count - 1]
+            let under = stack[stack.count - 2]
+            if top.value == .king && under.isAce && top.suit == under.suit {
+                newKillerStacks.insert(i)
+                if !aceKillerStacks.contains(i) {
+                    newKillerSuit = top.suit
+                }
+            }
+        }
+
+        let hasNew = !newKillerStacks.subtracting(aceKillerStacks).isEmpty
+        aceKillerStacks = newKillerStacks
+
+        if hasNew, let suit = newKillerSuit {
+            hadAceKiller = true
+            aceKillerSuit = suit
+            showAceKillerAlert = true
+        }
     }
 }

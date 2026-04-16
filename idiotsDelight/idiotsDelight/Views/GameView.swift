@@ -2,6 +2,7 @@ import SwiftUI
 
 struct GameView: View {
     var game: GameState
+    @State private var showStats = false
 
     var body: some View {
         ZStack {
@@ -11,15 +12,25 @@ struct GameView: View {
             VStack(spacing: 28) {
 
                 // Title + round info
-                VStack(spacing: 4) {
-                    Text("Idiot's Delight")
-                        .font(.title2.bold())
-                        .foregroundColor(.white)
-                    Text("Round \(game.roundNumber) of 13  ·  \(game.deck.count) cards in deck")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.65))
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Idiot's Delight")
+                            .font(.title2.bold())
+                            .foregroundColor(.white)
+                        Text("Round \(game.roundNumber) of 13  ·  \(game.deck.count) cards in deck")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.65))
+                    }
+                    Spacer()
+                    Button(action: { showStats = true }) {
+                        Image(systemName: "chart.bar.fill")
+                            .font(.title3)
+                            .foregroundColor(.white.opacity(0.75))
+                            .padding(8)
+                    }
                 }
                 .padding(.top, 24)
+                .padding(.horizontal, 20)
 
                 // The four stacks
                 HStack(spacing: 16) {
@@ -28,6 +39,7 @@ struct GameView: View {
                             stackIndex: i,
                             stack: game.stacks[i],
                             isSelected: game.selectedStack == i,
+                            isAceKiller: game.aceKillerStacks.contains(i),
                             onTap: { game.tapStack(i) }
                         )
                     }
@@ -57,6 +69,20 @@ struct GameView: View {
 
                 Spacer()
             }
+
+            // Ace Killer overlay
+            if game.showAceKillerAlert, let suit = game.aceKillerSuit {
+                AceKillerOverlay(
+                    suit: suit,
+                    onKeepPlaying: { game.dismissAceKillerAlert() },
+                    onStartOver: { game.reset() }
+                )
+                .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: game.showAceKillerAlert)
+        .sheet(isPresented: $showStats) {
+            StatsView()
         }
     }
 }
