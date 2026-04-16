@@ -12,9 +12,11 @@ struct AboutView: View {
                 VStack(spacing: 32) {
                     Spacer()
 
-                    Image(systemName: "suit.spade.fill")
-                        .font(.system(size: 60))
-                        .foregroundColor(.white.opacity(0.85))
+                    Image("Joker")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: 260)
+                        .padding(.horizontal, 24)
 
                     VStack(spacing: 16) {
                         Text("Idiot's Delight")
