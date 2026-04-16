@@ -1,0 +1,76 @@
+Idiot's Delight — App Store Listing Copy
+==========================================
+Date: 2026-04-16
+
+APP NAME
+--------
+Idiot's Delight
+
+SUBTITLE (30 char max)
+----------------------
+A Classic Solitaire Card Game
+
+DESCRIPTION
+-----------
+Idiot's Delight is a classic solitaire card game passed down through
+generations of card players. Simple to learn, surprisingly strategic —
+can you clear the deck down to four aces?
+
+Deal four cards at a time across four stacks. Remove cards when a
+higher card of the same suit is showing. Move aces to empty stacks to
+keep your options open. Win by leaving exactly one ace on each stack.
+
+FEATURES
+• Hint mode — highlights your best available move with a pulsing glow
+• Ace Killer alerts — warns you when a King buries a same-suit Ace,
+  making the game unwinnable
+• Game statistics — tracks wins, losses, win percentage, and Ace
+  Killer incidents
+• Portrait and landscape support
+• No ads, no in-app purchases, no account required
+
+A personal homage — this game was taught by family friends at a cabin
+in the mountains in the 1980s. Good times, good friends.
+
+KEYWORDS (100 char max, comma separated)
+-----------------------------------------
+solitaire,card game,classic,patience,aces,strategy,single player,cabin
+
+SUPPORT URL
+-----------
+https://danefrazier.com/app_support/
+
+PRIVACY POLICY URL
+------------------
+https://danefrazier.com/app_support/privacy.html
+
+VERSION
+-------
+1.0
+
+CATEGORY
+--------
+Primary:   Games → Card
+Secondary: Games → Board
+
+AGE RATING QUESTIONNAIRE (answer these in App Store Connect)
+------------------------------------------------------------
+- Made for Kids: No
+- Gambling: No
+- Cartoon / Fantasy Violence: No
+- Mature / Suggestive Themes: No
+- Unrestricted Web Access: No
+- Recommended rating result: 4+
+
+SCREENSHOT NOTES (for when you capture screens)
+------------------------------------------------
+Required: 6.9" iPhone (iPhone 16 Pro Max — 1320 x 2868 px)
+Optional: 6.5" (1284 x 2778), 5.5" (1242 x 2208)
+
+Suggested shots:
+  1. Opening game board (portrait) — shows the green felt, four stacks
+  2. Mid-game with cards dealt across stacks
+  3. Hint mode active — yellow pulsing glow on a card
+  4. Ace Killer alert overlay
+  5. Stats screen
+  6. About screen with joker
