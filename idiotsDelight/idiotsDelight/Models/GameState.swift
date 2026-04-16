@@ -100,7 +100,7 @@ class GameState {
 
         if let card = topCard, card.isAce {
             selectedStack = index
-            lastMessage = "\(card.displayString) selected — tap destination stack"
+            lastMessage = "\(card.displayString) selected — tap an empty stack to move"
         } else {
             let (ok, msg) = canRemove(stackIndex: index)
             if ok {
@@ -143,6 +143,10 @@ class GameState {
         guard let card = stacks[from].last, card.isAce else {
             selectedStack = nil
             lastMessage = "No ace to move"
+            return
+        }
+        guard stacks[to].isEmpty else {
+            lastMessage = "Aces can only be moved to empty stacks"
             return
         }
         stacks[from].removeLast()
