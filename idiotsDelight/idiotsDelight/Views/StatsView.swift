@@ -94,18 +94,36 @@ struct StatsView: View {
     }
 
     private func aceKillerRow() -> some View {
-        HStack {
-            Image(systemName: "crown.fill")
-                .foregroundColor(.orange)
-                .font(.subheadline)
-            Text("Ace Killer Losses")
-                .foregroundColor(.white.opacity(0.85))
-            Spacer()
-            Text("\(stats.aceKillerLosses)")
-                .font(.headline)
-                .foregroundColor(stats.aceKillerLosses > 0 ? .orange : .white)
+        VStack(spacing: 0) {
+            HStack {
+                Image(systemName: "crown.fill")
+                    .foregroundColor(.orange)
+                    .font(.subheadline)
+                Text("Ace Killers Encountered")
+                    .foregroundColor(.white.opacity(0.85))
+                Spacer()
+                Text("\(stats.aceKillerCount)")
+                    .font(.headline)
+                    .foregroundColor(stats.aceKillerCount > 0 ? .orange : .white)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+
+            Divider().background(Color.white.opacity(0.1))
+
+            HStack {
+                Image(systemName: "crown.fill")
+                    .foregroundColor(.orange.opacity(0.5))
+                    .font(.subheadline)
+                Text("Ace Killer Losses")
+                    .foregroundColor(.white.opacity(0.85))
+                Spacer()
+                Text("\(stats.aceKillerLosses)")
+                    .font(.headline)
+                    .foregroundColor(stats.aceKillerLosses > 0 ? .orange : .white)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
     }
 }

@@ -247,6 +247,7 @@ class GameState {
             hadAceKiller = true
             aceKillerSuit = suit
             showAceKillerAlert = true
+            StatsStore.shared.recordAceKiller()
         }
     }
 }

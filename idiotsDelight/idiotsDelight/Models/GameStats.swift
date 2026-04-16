@@ -5,6 +5,7 @@ struct GameStats: Codable {
     var gamesWon: Int = 0
     var gamesLost: Int = 0
     var cardsRemainingOnLoss: [Int] = []
+    var aceKillerCount: Int = 0
     var aceKillerLosses: Int = 0
 
     var winRate: Double {
@@ -33,6 +34,12 @@ class StatsStore {
         var stats = load()
         stats.gamesPlayed += 1
         stats.gamesWon += 1
+        save(stats)
+    }
+
+    func recordAceKiller() {
+        var stats = load()
+        stats.aceKillerCount += 1
         save(stats)
     }
 
