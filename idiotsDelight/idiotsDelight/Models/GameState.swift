@@ -20,8 +20,6 @@ class GameState {
     private(set) var hadAceKiller: Bool
     var showAceKillerAlert: Bool
 
-    // No-moves alert
-    var showNoMovesAlert: Bool
 
     init() {
         stacks = [[], [], [], []]
@@ -34,7 +32,7 @@ class GameState {
         aceKillerSuit = nil
         hadAceKiller = false
         showAceKillerAlert = false
-        showNoMovesAlert = false
+
         dealRound()
     }
 
@@ -49,7 +47,7 @@ class GameState {
         aceKillerSuit = nil
         hadAceKiller = false
         showAceKillerAlert = false
-        showNoMovesAlert = false
+
         dealRound()
     }
 
@@ -188,14 +186,10 @@ class GameState {
 
     private func checkAvailableMoves() {
         guard phase == .playing else { return }
-        guard !hasAvailableMoves else { return }
-        if deck.count == 0 {
-            phase = .lost
-            let remaining = stacks.reduce(0) { $0 + $1.count }
-            StatsStore.shared.recordLoss(cardsRemaining: remaining, hadAceKiller: hadAceKiller)
-        } else {
-            showNoMovesAlert = true
-        }
+        guard !hasAvailableMoves && deck.count == 0 else { return }
+        phase = .lost
+        let remaining = stacks.reduce(0) { $0 + $1.count }
+        StatsStore.shared.recordLoss(cardsRemaining: remaining, hadAceKiller: hadAceKiller)
     }
 
     private func checkAceKiller() {

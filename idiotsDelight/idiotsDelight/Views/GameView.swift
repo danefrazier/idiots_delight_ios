@@ -99,12 +99,6 @@ struct GameView: View {
         .sheet(isPresented: $showStats) {
             StatsView()
         }
-        .alert("No Further Plays", isPresented: $game.showNoMovesAlert) {
-            Button("Deal Next Round") { game.dealRound() }
-            Button("New Game", role: .destructive) { game.reset() }
-        } message: {
-            Text("There are no valid moves available. Deal the next round or start a new game.")
-        }
     }
 }
 
