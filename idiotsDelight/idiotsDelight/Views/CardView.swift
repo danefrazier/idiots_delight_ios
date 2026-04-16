@@ -38,6 +38,7 @@ struct EmptyStackView: View {
                 style: StrokeStyle(lineWidth: 2, dash: [6])
             )
             .frame(width: 75, height: 105)
+            .contentShape(Rectangle())
     }
 }
 
