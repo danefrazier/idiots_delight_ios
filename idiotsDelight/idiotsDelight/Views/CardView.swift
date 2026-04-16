@@ -5,6 +5,8 @@ struct CardView: View {
     var isSelected: Bool = false
     var isHinted: Bool = false
 
+    @State private var pulsing = false
+
     private var borderColor: Color {
         if isSelected { return .blue }
         if isHinted   { return .yellow }
@@ -20,8 +22,8 @@ struct CardView: View {
             RoundedRectangle(cornerRadius: 10)
                 .fill(.white)
                 .shadow(
-                    color: isHinted ? .yellow.opacity(0.7) : .black.opacity(0.25),
-                    radius: isHinted ? 8 : 4,
+                    color: isHinted ? .yellow.opacity(pulsing ? 0.85 : 0.25) : .black.opacity(0.25),
+                    radius: isHinted ? (pulsing ? 14 : 4) : 4,
                     x: 1, y: 2
                 )
 
@@ -39,7 +41,24 @@ struct CardView: View {
         .frame(width: 75, height: 105)
         .scaleEffect(isSelected ? 1.06 : 1.0)
         .animation(.spring(duration: 0.2), value: isSelected)
-        .animation(.easeInOut(duration: 0.4).repeatForever(autoreverses: true), value: isHinted)
+        .onChange(of: isHinted) { _, hinted in
+            if hinted {
+                withAnimation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true)) {
+                    pulsing = true
+                }
+            } else {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    pulsing = false
+                }
+            }
+        }
+        .onAppear {
+            if isHinted {
+                withAnimation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true)) {
+                    pulsing = true
+                }
+            }
+        }
     }
 }
 
