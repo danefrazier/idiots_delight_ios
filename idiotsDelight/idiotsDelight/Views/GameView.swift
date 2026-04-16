@@ -68,6 +68,21 @@ struct GameView: View {
                 .animation(.easeInOut, value: game.canDeal)
 
                 Spacer()
+
+                HStack {
+                    Button(action: { game.reset() }) {
+                        Text("New Game")
+                            .font(.subheadline.bold())
+                            .foregroundColor(.white.opacity(0.85))
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Color.black.opacity(0.3))
+                            .clipShape(Capsule())
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 16)
             }
 
             // Ace Killer overlay
