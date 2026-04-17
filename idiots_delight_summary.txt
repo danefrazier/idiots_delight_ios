@@ -259,18 +259,29 @@ Support site deployed to www.support.danefrazier.com (S3 → Amplify).
 App Privacy set to "no data collected". Pricing set to Free.
 App submitted for review 2026-04-16. Awaiting Apple review (24–48 hrs).
 
+Session 14 — v1.1 Submission
+------------------------------
+Version bumped to 1.1 (build 33) after v1.0 App Store rejection.
+Changes included in v1.1:
+  - Best Game stat (fewest total cards remaining across all games)
+  - Version string on About screen (sourced from Bundle infoDictionary)
+  - Portrait card sizing via GeometryReader — scales up for iPad 13"
+  - HelpView: scrollable how-to-play sheet via ? button in header
+  - WalkthroughView: 5-step first-launch overlay (AppStorage flag)
+  - Accessibility: spoken card names, VoiceOver labels on all buttons,
+    status message announcements via AccessibilityNotification
+
+v1.1 build 33 submitted to App Store review 2026-04-17.
+
 Current State
 -------------
-v1.0 (build 2) submitted to App Store review.
+v1.1 (build 33) submitted to App Store review.
 All features implemented and building successfully.
-Persistent top bar in both orientations.
-Landscape cards fill available screen space, safe-area-aware.
-All end-of-game overlays transparent with uniform 2-second delay.
-Stats persist across app launches. Best Game stat added.
 Support site live at www.support.danefrazier.com.
+Help sheet and first-launch walkthrough added.
+Accessibility baseline implemented.
 
 Remaining work:
   - Await App Store review approval.
   - Card deal / removal animations beyond basic scale+opacity transition.
   - Confetti or win animation.
-  - iPad layout optimisation.
