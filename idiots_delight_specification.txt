@@ -144,8 +144,9 @@ Landscape (verticalSizeClass == .compact)
   Three-column HStack layout below the header.
   Left panel (110 pt): round/deck info, status message, New Game.
   Center: four stack columns sized dynamically via GeometryReader —
-    width fills space between panels, clamped to 85% of available
-    height, 1:1.4 aspect ratio.
+    card width = floor((available - safe insets - panels - gaps - padding
+    - card gaps) / 4), clamped to 82% of safe height, 1:1.4 ratio.
+    Safe area insets (notch/Dynamic Island) subtracted before sizing.
   Right panel (130 pt): Deal Next Round button, centred vertically.
 
 13. About Screen

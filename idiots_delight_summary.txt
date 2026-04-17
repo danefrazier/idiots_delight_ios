@@ -188,12 +188,22 @@ Uniform 2-second overlay delay: all four end-of-game transitions
   to 2 seconds. All three overlays are transparent (55% black veil)
   so cards remain visible beneath.
 
+Session 11 — Landscape Layout Fixes
+--------------------------------------
+Landscape card overflow fixed: stack 3 label was wrapping and stack 4
+  labels were clipped due to safe area insets (notch/Dynamic Island
+  ~47pt per side) not being subtracted from available width.
+  GeometryReader moved back to wrap the full landscape layout so
+  geo.safeAreaInsets.leading + trailing can be read and subtracted
+  before computing card width. Card sizes use floor() to avoid
+  sub-pixel rounding overflow.
+
 Current State
 -------------
 v1.0 in TestFlight for internal testing.
 All features implemented and building successfully.
 Persistent top bar in both orientations.
-Landscape cards fill available screen space dynamically.
+Landscape cards fill available screen space, safe-area-aware.
 All end-of-game overlays transparent with uniform 2-second delay.
 Stats persist across app launches.
 Support and privacy pages ready to deploy to S3.
