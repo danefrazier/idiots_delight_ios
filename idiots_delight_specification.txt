@@ -209,8 +209,8 @@ idiotsDelight/
 
 16. App Store Assets
 --------------------
-Support URL:      https://danefrazier.com/app_support/
-Privacy Policy:   https://danefrazier.com/app_support/privacy.html
+Support URL:      https://support.danefrazier.com
+Privacy Policy:   https://support.danefrazier.com/privacy.html
 Bundle ID:        com.danefrazier.idiotsdelight.idiotsDelight
 Version:          1.0 (build 1)
 Category:         Games → Card
