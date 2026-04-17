@@ -7,7 +7,6 @@ struct GameView: View {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     private var isLandscape: Bool { verticalSizeClass == .compact }
-    private var portraitCardSize: CGSize { CGSize(width: 75, height: 105) }
 
 
     var body: some View {
@@ -50,18 +49,27 @@ struct GameView: View {
     // MARK: - Portrait
 
     private var portraitLayout: some View {
-        VStack(spacing: 24) {
-            stacksRow(cardSize: portraitCardSize)
-                .padding(.top, 16)
+        GeometryReader { geo in
+            let hPad: CGFloat = 16
+            let spacing: CGFloat = 12
+            let cardW = floor((geo.size.width - hPad * 2 - spacing * 3) / 4)
+            let cardH = min(floor(cardW * 1.4), floor(geo.size.height * 0.4))
+            let cardSize = CGSize(width: cardW, height: cardH)
 
-            statusMessage
+            VStack(spacing: 24) {
+                stacksRow(cardSize: cardSize)
+                    .padding(.top, 16)
+                    .padding(.horizontal, hPad)
 
-            dealButton
+                statusMessage
 
-            Spacer()
+                dealButton
 
-            newGameButton
-                .padding(.bottom, 16)
+                Spacer()
+
+                newGameButton
+                    .padding(.bottom, 16)
+            }
         }
     }
 
