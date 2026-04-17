@@ -149,7 +149,7 @@ Signing resolved:
   - Archive succeeded via Xcode Cloud after granting managed
     distribution access.
 
-Session 9 — TestFlight Polish
+Session 9 — TestFlight Polish (round 1)
 ------------------------------
 Overlay transparency pass — all three end-of-game overlays (Win, Lose,
   Ace Killer) made semi-transparent so cards remain visible beneath:
@@ -172,14 +172,30 @@ Ace Killer stats cleanup:
   - Kept aceKillerCount: fires synchronously at detection time, before
     the async delay, so it records regardless of player choice.
 
+Session 10 — TestFlight Polish (round 2)
+-----------------------------------------
+Persistent header bar: "Idiot's Delight" title, Hints toggle, Stats,
+  and About buttons now always occupy a single top row in both portrait
+  and landscape. Landscape left panel trimmed to round info, status
+  message, and New Game only.
+
+Landscape cards dynamic sizing: replaced fixed 58×81 card size with
+  GeometryReader-driven calculation. Cards fill the width between left
+  and right panels (clamped to 85% of available height, 1:1.4 ratio).
+
+Uniform 2-second overlay delay: all four end-of-game transitions
+  (win, no-moves loss, deck-empty loss, ace killer alert) standardised
+  to 2 seconds. All three overlays are transparent (55% black veil)
+  so cards remain visible beneath.
+
 Current State
 -------------
 v1.0 in TestFlight for internal testing.
 All features implemented and building successfully.
-All end-of-game transitions have delays and transparent overlays.
+Persistent top bar in both orientations.
+Landscape cards fill available screen space dynamically.
+All end-of-game overlays transparent with uniform 2-second delay.
 Stats persist across app launches.
-Portrait and landscape fully functional.
-About screen displays transparent joker illustration.
 Support and privacy pages ready to deploy to S3.
 
 Remaining work:

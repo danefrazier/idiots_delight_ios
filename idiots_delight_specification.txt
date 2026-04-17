@@ -76,7 +76,8 @@ lower card instead.
 7. Win Condition
 ----------------
 All four stacks contain exactly one card and that card is an ace (any
-suit). Aces need not be of different suits.
+suit). Aces need not be of different suits. Status message shown
+immediately; win overlay fades in after a 2-second delay.
 
 8. Loss Conditions
 ------------------
@@ -130,17 +131,21 @@ offers a "Reset Stats" action with a two-button confirmation
 
 12. Orientation Support
 -----------------------
+Persistent header bar (both orientations)
+  Single top row: "Idiot's Delight" title · Hints toggle · Stats ·
+  About. Separated from the layout below by a subtle divider.
+
 Portrait
-  Stacked VStack layout. Card size 75×105 pt. Header shows title,
-  round counter, deck count, hints toggle, stats, and about buttons.
+  Stacked VStack layout below the header. Card size 75×105 pt.
   Status message below stacks. "Deal Next Round" button below message.
   "New Game" button at bottom.
 
 Landscape (verticalSizeClass == .compact)
-  Three-column HStack layout.
-  Left panel (140 pt): title, round/deck info, hints toggle, stats/
-    about buttons, status message, New Game button.
-  Center: four stack columns with smaller cards (58×81 pt).
+  Three-column HStack layout below the header.
+  Left panel (110 pt): round/deck info, status message, New Game.
+  Center: four stack columns sized dynamically via GeometryReader —
+    width fills space between panels, clamped to 85% of available
+    height, 1:1.4 aspect ratio.
   Right panel (130 pt): Deal Next Round button, centred vertically.
 
 13. About Screen
