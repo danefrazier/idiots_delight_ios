@@ -223,6 +223,33 @@ Landscape layout redesigned as 6 equal columns:
     HStack spacing = 0; each column carries its own .frame(width: colW).
     All 4 stack columns are guaranteed identical width.
 
+Session 12 — Best Game Stat
+-----------------------------
+Added "Best Game" statistic: fewest total cards remaining (stacks + deck)
+  across all completed games, regardless of win or loss.
+
+GameStats.swift:
+  - Added fewestCardsRemaining: Int? (nil until first game; Codable default
+    handles existing persisted stats without migration).
+  - recordWin(cardsRemaining:) — new parameter; updates minimum.
+  - recordLoss(cardsRemaining:hadAceKiller:) — also updates minimum.
+    Loss paths always fire with deck empty, so cardsRemaining = stack total.
+
+GameState.swift:
+  - checkWin() computes total = stacks.reduce(0){$0+$1.count} + deck.count
+    and passes it to recordWin(cardsRemaining:). Handles early wins where
+    deck still has cards (e.g. win on round 10 = 4 stack + 12 deck = 16).
+
+StatsView.swift:
+  - "Best Game" row added to the Results section.
+    Shows "N cards" or "—" if no games played yet.
+
+Scoring logic:
+  - Win with full deck dealt: 4 cards (four aces, deck empty).
+  - Win before deck empty: 4 + deck.count.
+  - Loss: sum of all stack card counts (deck is 0 at loss time).
+  - Best game = minimum of all completed game totals.
+
 Current State
 -------------
 v1.0 in TestFlight for internal testing.
@@ -230,7 +257,7 @@ All features implemented and building successfully.
 Persistent top bar in both orientations.
 Landscape cards fill available screen space, safe-area-aware.
 All end-of-game overlays transparent with uniform 2-second delay.
-Stats persist across app launches.
+Stats persist across app launches. Best Game stat added.
 Support and privacy pages ready to deploy to S3.
 
 Remaining work:

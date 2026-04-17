@@ -19,6 +19,7 @@ struct StatsView: View {
                         statRow("Win Rate", value: stats.gamesPlayed > 0
                             ? String(format: "%.0f%%", stats.winRate * 100)
                             : "—")
+                        statRow("Best Game", value: stats.fewestCardsRemaining.map { "\($0) cards" } ?? "—")
                     }
 
                     statSection("Loss Detail") {

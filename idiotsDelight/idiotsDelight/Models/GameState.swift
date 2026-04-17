@@ -216,7 +216,8 @@ class GameState {
     private func checkWin() {
         if isWon {
             lastMessage = "You win! Four aces."
-            StatsStore.shared.recordWin()
+            let total = stacks.reduce(0) { $0 + $1.count } + deck.count
+            StatsStore.shared.recordWin(cardsRemaining: total)
             Task { @MainActor in
                 try? await Task.sleep(for: .seconds(2))
                 guard phase == .playing else { return }

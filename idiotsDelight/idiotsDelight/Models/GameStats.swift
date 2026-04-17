@@ -6,6 +6,7 @@ struct GameStats: Codable {
     var gamesLost: Int = 0
     var cardsRemainingOnLoss: [Int] = []
     var aceKillerCount: Int = 0
+    var fewestCardsRemaining: Int? = nil
 
     var winRate: Double {
         gamesPlayed > 0 ? Double(gamesWon) / Double(gamesPlayed) : 0
@@ -29,10 +30,15 @@ class StatsStore {
         return stats
     }
 
-    func recordWin() {
+    func recordWin(cardsRemaining: Int) {
         var stats = load()
         stats.gamesPlayed += 1
         stats.gamesWon += 1
+        if let best = stats.fewestCardsRemaining {
+            stats.fewestCardsRemaining = min(best, cardsRemaining)
+        } else {
+            stats.fewestCardsRemaining = cardsRemaining
+        }
         save(stats)
     }
 
@@ -47,6 +53,11 @@ class StatsStore {
         stats.gamesPlayed += 1
         stats.gamesLost += 1
         stats.cardsRemainingOnLoss.append(cardsRemaining)
+        if let best = stats.fewestCardsRemaining {
+            stats.fewestCardsRemaining = min(best, cardsRemaining)
+        } else {
+            stats.fewestCardsRemaining = cardsRemaining
+        }
         save(stats)
     }
 

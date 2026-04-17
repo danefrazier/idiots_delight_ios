@@ -124,6 +124,11 @@ Tracked across all sessions (persisted via UserDefaults):
   - Total wins / win percentage
   - Average cards remaining on loss
   - Ace Killers Encountered (incremented at detection time)
+  - Best Game: fewest total cards remaining (stacks + deck) across all
+    completed games. A win with a full deck dealt = 4 (four aces). An
+    early win before the deck is empty = 4 + deck.count. A loss = sum
+    of all stack cards (deck is always empty at loss time). Lower is better.
+    Displayed as "N cards" or "—" if no games have been completed.
 
 A Stats sheet (bar-chart icon in header) displays all statistics and
 offers a "Reset Stats" action with a two-button confirmation
