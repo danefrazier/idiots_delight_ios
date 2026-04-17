@@ -1,24 +1,21 @@
-//
-//  ContentView.swift
-//  idiotsDelight
-//
-//  Created by Dane Frazier on 4/16/26.
-//
-
 import SwiftUI
 
 struct ContentView: View {
     @State private var game = GameState()
 
     var body: some View {
-        switch game.phase {
-        case .playing:
+        ZStack {
             GameView(game: game)
-        case .won:
-            WinView(game: game)
-        case .lost:
-            LoseView(game: game)
+
+            if game.phase == .won {
+                WinView(game: game)
+                    .transition(.opacity)
+            } else if game.phase == .lost {
+                LoseView(game: game)
+                    .transition(.opacity)
+            }
         }
+        .animation(.easeInOut(duration: 0.4), value: game.phase)
     }
 }
 

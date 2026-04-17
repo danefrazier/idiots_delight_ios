@@ -170,10 +170,14 @@ class GameState {
 
     func dealRound() {
         guard deck.count > 0 else {
-            phase = .lost
             lastMessage = "No cards left — game over"
             let remaining = stacks.reduce(0) { $0 + $1.count }
             StatsStore.shared.recordLoss(cardsRemaining: remaining, hadAceKiller: hadAceKiller)
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(3))
+                guard phase == .playing else { return }
+                phase = .lost
+            }
             return
         }
         roundNumber += 1
@@ -211,8 +215,13 @@ class GameState {
 
     private func checkWin() {
         if isWon {
-            phase = .won
+            lastMessage = "You win! Four aces."
             StatsStore.shared.recordWin()
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(3))
+                guard phase == .playing else { return }
+                phase = .won
+            }
         }
     }
 
