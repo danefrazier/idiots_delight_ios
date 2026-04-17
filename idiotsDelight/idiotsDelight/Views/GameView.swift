@@ -8,7 +8,24 @@ struct GameView: View {
 
     private var isLandscape: Bool { verticalSizeClass == .compact }
     private var portraitCardSize: CGSize { CGSize(width: 75, height: 105) }
-    private var landscapeCardSize: CGSize { CGSize(width: 58, height: 81) }
+
+    private func landscapeCardSize(in geometry: GeometryProxy) -> CGSize {
+        // Fixed panels: left 140, right 130, h-padding 40, two HStack gaps 40
+        let usedWidth: CGFloat = 140 + 130 + 40 + 40
+        let availableWidth = geometry.size.width - usedWidth
+        let availableHeight = geometry.size.height - 24 // vertical padding
+
+        // Width-driven size: 4 cards with 12pt gaps
+        let cardW = (availableWidth - 3 * 12) / 4
+        let cardH = cardW * 1.4
+
+        // Clamp so cards don't overflow vertically
+        let maxH = availableHeight * 0.85
+        let clampedH = min(cardH, maxH)
+        let clampedW = clampedH / 1.4
+
+        return CGSize(width: clampedW, height: clampedH)
+    }
 
     var body: some View {
         ZStack {
@@ -60,75 +77,77 @@ struct GameView: View {
     // MARK: - Landscape
 
     private var landscapeLayout: some View {
-        HStack(spacing: 20) {
+        GeometryReader { geometry in
+            HStack(spacing: 20) {
 
-            // Left panel: controls
-            VStack(alignment: .leading, spacing: 10) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Idiot's Delight")
-                        .font(.headline.bold())
-                        .foregroundColor(.white)
-                    Text("Round \(game.roundNumber) of 13")
-                        .font(.caption2)
-                        .foregroundColor(.white.opacity(0.65))
-                    Text("\(game.deck.count) cards in deck")
-                        .font(.caption2)
-                        .foregroundColor(.white.opacity(0.65))
-                }
+                // Left panel: controls
+                VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Idiot's Delight")
+                            .font(.headline.bold())
+                            .foregroundColor(.white)
+                        Text("Round \(game.roundNumber) of 13")
+                            .font(.caption2)
+                            .foregroundColor(.white.opacity(0.65))
+                        Text("\(game.deck.count) cards in deck")
+                            .font(.caption2)
+                            .foregroundColor(.white.opacity(0.65))
+                    }
 
-                HStack(spacing: 6) {
-                    Toggle("", isOn: $game.hintMode)
-                        .toggleStyle(.switch)
-                        .tint(.yellow)
-                        .labelsHidden()
-                        .scaleEffect(0.85)
-                    Text("Hints")
-                        .font(.caption2)
-                        .foregroundColor(.white.opacity(0.7))
+                    HStack(spacing: 6) {
+                        Toggle("", isOn: $game.hintMode)
+                            .toggleStyle(.switch)
+                            .tint(.yellow)
+                            .labelsHidden()
+                            .scaleEffect(0.85)
+                        Text("Hints")
+                            .font(.caption2)
+                            .foregroundColor(.white.opacity(0.7))
+                        Spacer()
+                        Button(action: { showStats = true }) {
+                            Image(systemName: "chart.bar.fill")
+                                .foregroundColor(.white.opacity(0.75))
+                        }
+                        Button(action: { showAbout = true }) {
+                            Image(systemName: "info.circle")
+                                .foregroundColor(.white.opacity(0.75))
+                        }
+                    }
+
                     Spacer()
-                    Button(action: { showStats = true }) {
-                        Image(systemName: "chart.bar.fill")
-                            .foregroundColor(.white.opacity(0.75))
-                    }
-                    Button(action: { showAbout = true }) {
-                        Image(systemName: "info.circle")
-                            .foregroundColor(.white.opacity(0.75))
-                    }
+
+                    Text(game.lastMessage)
+                        .font(.caption2)
+                        .foregroundColor(.white.opacity(0.85))
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .animation(.easeInOut(duration: 0.2), value: game.lastMessage)
+
+                    Spacer()
+
+                    newGameButton
+                }
+                .frame(width: 140)
+                .padding(.vertical, 12)
+
+                // Center: stacks sized to fill available space
+                VStack(spacing: 12) {
+                    Spacer()
+                    stacksRow(cardSize: landscapeCardSize(in: geometry))
+                    Spacer()
                 }
 
-                Spacer()
-
-                Text(game.lastMessage)
-                    .font(.caption2)
-                    .foregroundColor(.white.opacity(0.85))
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .animation(.easeInOut(duration: 0.2), value: game.lastMessage)
-
-                Spacer()
-
-                newGameButton
+                // Right: deal button
+                VStack {
+                    Spacer()
+                    dealButton
+                    Spacer()
+                }
+                .frame(width: 130)
+                .padding(.vertical, 12)
             }
-            .frame(width: 140)
-            .padding(.vertical, 12)
-
-            // Center: stacks
-            VStack(spacing: 12) {
-                Spacer()
-                stacksRow(cardSize: landscapeCardSize)
-                Spacer()
-            }
-
-            // Right: deal button
-            VStack {
-                Spacer()
-                dealButton
-                Spacer()
-            }
-            .frame(width: 130)
-            .padding(.vertical, 12)
+            .padding(.horizontal, 20)
         }
-        .padding(.horizontal, 20)
     }
 
     // MARK: - Shared subviews
