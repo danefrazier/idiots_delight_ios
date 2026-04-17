@@ -260,8 +260,11 @@ class GameState {
         if hasNew, let suit = newKillerSuit {
             hadAceKiller = true
             aceKillerSuit = suit
-            showAceKillerAlert = true
             StatsStore.shared.recordAceKiller()
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(2))
+                showAceKillerAlert = true
+            }
         }
     }
 }

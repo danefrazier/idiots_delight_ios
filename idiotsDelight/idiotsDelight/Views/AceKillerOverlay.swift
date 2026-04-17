@@ -7,18 +7,20 @@ struct AceKillerOverlay: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.75)
+            Color.black.opacity(0.55)
                 .ignoresSafeArea()
 
             VStack(spacing: 20) {
                 Image(systemName: "crown.fill")
                     .font(.system(size: 64))
                     .foregroundColor(.orange)
+                    .shadow(color: .black.opacity(0.6), radius: 6, x: 0, y: 3)
 
                 Text("ACE KILLER")
                     .font(.system(size: 34, weight: .black))
                     .foregroundColor(.orange)
                     .tracking(2)
+                    .shadow(color: .black.opacity(0.6), radius: 4)
 
                 VStack(spacing: 6) {
                     Text("The King of \(suit.rawValue)")
@@ -58,7 +60,7 @@ struct AceKillerOverlay: View {
                 }
             }
             .padding(32)
-            .background(Color(red: 0.1, green: 0.08, blue: 0.15))
+            .background(Color.black.opacity(0.45))
             .clipShape(RoundedRectangle(cornerRadius: 24))
             .padding(28)
         }
