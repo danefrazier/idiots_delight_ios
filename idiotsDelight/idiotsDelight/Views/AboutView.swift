@@ -3,6 +3,12 @@ import SwiftUI
 struct AboutView: View {
     @Environment(\.dismiss) private var dismiss
 
+    private var versionString: String {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        return "v\(version) (\(build))"
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -36,6 +42,11 @@ struct AboutView: View {
                         .padding(.horizontal, 36)
 
                     Spacer()
+
+                    Text(versionString)
+                        .font(.caption2)
+                        .foregroundColor(.white.opacity(0.35))
+                        .padding(.bottom, 16)
                 }
             }
             .navigationTitle("About")
