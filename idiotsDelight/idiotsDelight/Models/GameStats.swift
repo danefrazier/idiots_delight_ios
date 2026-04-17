@@ -6,7 +6,6 @@ struct GameStats: Codable {
     var gamesLost: Int = 0
     var cardsRemainingOnLoss: [Int] = []
     var aceKillerCount: Int = 0
-    var aceKillerLosses: Int = 0
 
     var winRate: Double {
         gamesPlayed > 0 ? Double(gamesWon) / Double(gamesPlayed) : 0
@@ -48,7 +47,6 @@ class StatsStore {
         stats.gamesPlayed += 1
         stats.gamesLost += 1
         stats.cardsRemainingOnLoss.append(cardsRemaining)
-        if hadAceKiller { stats.aceKillerLosses += 1 }
         save(stats)
     }
 
