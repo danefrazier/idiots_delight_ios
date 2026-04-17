@@ -11,13 +11,13 @@ struct GameView: View {
 
     // geometry is the full landscape GeometryReader proxy
     private func landscapeCardSize(in geometry: GeometryProxy) -> CGSize {
-        // Subtract: left panel, right panel, 2 HStack gaps, horizontal padding, safe insets
+        // left 100 + right 110 + 2 gaps*16 + 2*padding*12 + safe insets
         let sideInsets = geometry.safeAreaInsets.leading + geometry.safeAreaInsets.trailing
-        let usedWidth: CGFloat = 110 + 130 + 40 + 40 + sideInsets
+        let usedWidth: CGFloat = 100 + 110 + 32 + 24 + sideInsets
         let availableWidth = geometry.size.width - usedWidth
         let cardW = floor((availableWidth - 3 * 12) / 4)
         let cardH = floor(cardW * 1.4)
-        let maxH = (geometry.size.height - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom) * 0.82
+        let maxH = (geometry.size.height - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom) * 0.90
         let clampedH = min(cardH, maxH)
         let clampedW = floor(clampedH / 1.4)
         return CGSize(width: clampedW, height: clampedH)
@@ -82,19 +82,10 @@ struct GameView: View {
 
     private var landscapeLayout: some View {
         GeometryReader { geo in
-            HStack(spacing: 20) {
+            HStack(spacing: 16) {
 
-                // Left panel: round info, status, new game
+                // Left panel: status message + new game
                 VStack(alignment: .leading, spacing: 10) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Round \(game.roundNumber) of 13")
-                            .font(.caption2)
-                            .foregroundColor(.white.opacity(0.65))
-                        Text("\(game.deck.count) cards in deck")
-                            .font(.caption2)
-                            .foregroundColor(.white.opacity(0.65))
-                    }
-
                     Spacer()
 
                     Text(game.lastMessage)
@@ -108,7 +99,7 @@ struct GameView: View {
 
                     newGameButton
                 }
-                .frame(width: 110)
+                .frame(width: 100)
                 .padding(.vertical, 12)
 
                 // Center: stacks
@@ -118,16 +109,16 @@ struct GameView: View {
                     Spacer()
                 }
 
-                // Right: deal button
+                // Right: deal button fills the panel width
                 VStack {
                     Spacer()
-                    dealButton
+                    landscapeDealButton
                     Spacer()
                 }
-                .frame(width: 130)
+                .frame(width: 110)
                 .padding(.vertical, 12)
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 12)
         }
     }
 
@@ -200,6 +191,21 @@ struct GameView: View {
                 .padding(.vertical, 13)
                 .background(game.canDeal ? Color.blue : Color.gray.opacity(0.4))
                 .clipShape(Capsule())
+        }
+        .disabled(!game.canDeal)
+        .animation(.easeInOut, value: game.canDeal)
+    }
+
+    private var landscapeDealButton: some View {
+        Button(action: { game.dealRound() }) {
+            Text("Deal\nNext\nRound")
+                .font(.headline)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(game.canDeal ? Color.blue : Color.gray.opacity(0.4))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
         }
         .disabled(!game.canDeal)
         .animation(.easeInOut, value: game.canDeal)
