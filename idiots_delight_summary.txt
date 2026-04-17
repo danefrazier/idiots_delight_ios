@@ -198,6 +198,15 @@ Landscape card overflow fixed: stack 3 label was wrapping and stack 4
   before computing card width. Card sizes use floor() to avoid
   sub-pixel rounding overflow.
 
+Landscape polish pass:
+  - Removed duplicate round/deck text from left panel; lastMessage is
+    the single status area in landscape.
+  - landscapeDealButton: explicit 3-line text + full-width rounded rect
+    replaces capsule that became circular when text wrapped.
+  - HStack spacing reduced (20→16) and h-padding (20→12) to recover
+    unused space on the right edge.
+  - Height clamp raised to 90% so cards fill more vertical screen space.
+
 Current State
 -------------
 v1.0 in TestFlight for internal testing.
