@@ -144,9 +144,10 @@ Landscape (verticalSizeClass == .compact)
   Three-column HStack layout below the header.
   Left panel (100 pt): status message (lastMessage only), New Game button.
   Center: four stack columns sized dynamically via GeometryReader —
-    card width = floor((available - safe insets - panels - gaps - padding
+    geo.size.width is already safe-area-constrained (VStack respects
+    safe areas); safe insets are NOT subtracted again.
+    card width = floor((geo.width - panels - gaps - padding - 8pt buffer
     - card gaps) / 4), clamped to 90% of safe height, 1:1.4 ratio.
-    Safe area insets (notch/Dynamic Island) subtracted before sizing.
   Right panel (110 pt): "Deal / Next / Round" button as full-width
     rounded rectangle (not capsule), fills panel width cleanly.
 

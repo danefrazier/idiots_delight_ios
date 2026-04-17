@@ -203,9 +203,18 @@ Landscape polish pass:
     the single status area in landscape.
   - landscapeDealButton: explicit 3-line text + full-width rounded rect
     replaces capsule that became circular when text wrapped.
-  - HStack spacing reduced (20→16) and h-padding (20→12) to recover
+  - HStack spacing reduced (20→16) and h-padding (20→8) to recover
     unused space on the right edge.
   - Height clamp raised to 90% so cards fill more vertical screen space.
+
+Landscape card sizing root cause fixed:
+  - geo.size.width inside a VStack is already safe-area-constrained.
+    Subtracting safeAreaInsets.leading + trailing was double-subtracting,
+    shrinking cards and leaving unused green space to the right of the
+    Deal button. Safe area subtraction removed from card size calculation.
+  - usedWidth now: left panel + right panel + 2 gaps + 2*padding + 8pt
+    buffer. Cards now fill the available center width correctly.
+  - Stack 4 label/count wrapping resolved.
 
 Current State
 -------------
