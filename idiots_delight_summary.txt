@@ -130,8 +130,8 @@ Static support site built at app_support/:
   joker.png    — Joker image copied from asset catalog.
   appstore_listing.txt — App name, subtitle, description, keywords,
                          URLs, age rating, screenshot guidance.
-  Target URLs: https://support.danefrazier.com
-               https://support.danefrazier.com/privacy.html
+  Target URLs: https://www.support.danefrazier.com
+               https://www.support.danefrazier.com/privacy.html
 
 Bug fixes:
   - Ace killer stat not recording when player tapped Start Over:
@@ -261,7 +261,7 @@ Stats persist across app launches. Best Game stat added.
 Support and privacy pages ready to deploy to S3.
 
 Remaining work:
-  - Deploy app_support/ to support.danefrazier.com (S3 → Amplify).
+  - Deploy app_support/ to www.support.danefrazier.com (S3 → Amplify).
   - Complete TestFlight testing.
   - Create App Store listing in App Store Connect and submit for review.
   - Card deal / removal animations beyond basic scale+opacity transition.

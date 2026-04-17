@@ -38,11 +38,11 @@ solitaire,card game,classic,patience,aces,strategy,single player,cabin
 
 SUPPORT URL
 -----------
-https://support.danefrazier.com
+https://www.support.danefrazier.com
 
 PRIVACY POLICY URL
 ------------------
-https://support.danefrazier.com/privacy.html
+https://www.support.danefrazier.com/privacy.html
 
 VERSION
 -------
