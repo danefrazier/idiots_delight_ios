@@ -250,20 +250,27 @@ Scoring logic:
   - Loss: sum of all stack card counts (deck is 0 at loss time).
   - Best game = minimum of all completed game totals.
 
+Session 13 — App Store Submission
+-----------------------------------
+Build 2 archived and uploaded to App Store Connect.
+App Store listing created with metadata from appstore_listing.txt.
+Screenshots captured for iPhone 6.9" and iPad 13" displays.
+Support site deployed to www.support.danefrazier.com (S3 → Amplify).
+App Privacy set to "no data collected". Pricing set to Free.
+App submitted for review 2026-04-16. Awaiting Apple review (24–48 hrs).
+
 Current State
 -------------
-v1.0 in TestFlight for internal testing.
+v1.0 (build 2) submitted to App Store review.
 All features implemented and building successfully.
 Persistent top bar in both orientations.
 Landscape cards fill available screen space, safe-area-aware.
 All end-of-game overlays transparent with uniform 2-second delay.
 Stats persist across app launches. Best Game stat added.
-Support and privacy pages ready to deploy to S3.
+Support site live at www.support.danefrazier.com.
 
 Remaining work:
-  - Deploy app_support/ to www.support.danefrazier.com (S3 → Amplify).
-  - Complete TestFlight testing.
-  - Create App Store listing in App Store Connect and submit for review.
+  - Await App Store review approval.
   - Card deal / removal animations beyond basic scale+opacity transition.
   - Confetti or win animation.
   - iPad layout optimisation.
