@@ -9,20 +9,17 @@ struct GameView: View {
     private var isLandscape: Bool { verticalSizeClass == .compact }
     private var portraitCardSize: CGSize { CGSize(width: 75, height: 105) }
 
+    // geometry is the full landscape GeometryReader proxy
     private func landscapeCardSize(in geometry: GeometryProxy) -> CGSize {
-        // Fixed panels: left 110, right 130, h-padding 40, two HStack gaps 40
-        // Header row sits above, so available height excludes it (~44pt)
-        let usedWidth: CGFloat = 110 + 130 + 40 + 40
+        // Subtract: left panel, right panel, 2 HStack gaps, horizontal padding, safe insets
+        let sideInsets = geometry.safeAreaInsets.leading + geometry.safeAreaInsets.trailing
+        let usedWidth: CGFloat = 110 + 130 + 40 + 40 + sideInsets
         let availableWidth = geometry.size.width - usedWidth
-        let availableHeight = geometry.size.height - 24
-
-        let cardW = (availableWidth - 3 * 12) / 4
-        let cardH = cardW * 1.4
-
-        let maxH = availableHeight * 0.85
+        let cardW = floor((availableWidth - 3 * 12) / 4)
+        let cardH = floor(cardW * 1.4)
+        let maxH = (geometry.size.height - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom) * 0.82
         let clampedH = min(cardH, maxH)
-        let clampedW = clampedH / 1.4
-
+        let clampedW = floor(clampedH / 1.4)
         return CGSize(width: clampedW, height: clampedH)
     }
 
@@ -84,7 +81,7 @@ struct GameView: View {
     // MARK: - Landscape
 
     private var landscapeLayout: some View {
-        GeometryReader { geometry in
+        GeometryReader { geo in
             HStack(spacing: 20) {
 
                 // Left panel: round info, status, new game
@@ -114,10 +111,10 @@ struct GameView: View {
                 .frame(width: 110)
                 .padding(.vertical, 12)
 
-                // Center: stacks sized to fill available space
+                // Center: stacks
                 VStack(spacing: 12) {
                     Spacer()
-                    stacksRow(cardSize: landscapeCardSize(in: geometry))
+                    stacksRow(cardSize: landscapeCardSize(in: geo))
                     Spacer()
                 }
 
