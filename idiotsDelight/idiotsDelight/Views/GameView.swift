@@ -9,16 +9,17 @@ struct GameView: View {
     private var isLandscape: Bool { verticalSizeClass == .compact }
     private var portraitCardSize: CGSize { CGSize(width: 75, height: 105) }
 
-    // geometry is the full landscape GeometryReader proxy
+    // geometry is the full landscape GeometryReader proxy.
+    // geo.size.width is already safe-area-constrained (VStack respects safe areas).
+    // Do NOT subtract safeAreaInsets again — that double-subtracts and shrinks cards.
     private func landscapeCardSize(in geometry: GeometryProxy) -> CGSize {
-        // left 100 + right 110 + 2 gaps*16 + 2*padding*12 + safe insets
-        let sideInsets = geometry.safeAreaInsets.leading + geometry.safeAreaInsets.trailing
-        let usedWidth: CGFloat = 100 + 110 + 32 + 24 + sideInsets
-        let availableWidth = geometry.size.width - usedWidth
+        // left panel + right panel + 2 HStack gaps + 2 * h-padding + 8pt buffer
+        let usedWidth: CGFloat = 100 + 110 + 32 + 16 + 8
+        let availableWidth = max(0, geometry.size.width - usedWidth)
         let cardW = floor((availableWidth - 3 * 12) / 4)
         let cardH = floor(cardW * 1.4)
-        let maxH = (geometry.size.height - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom) * 0.90
-        let clampedH = min(cardH, maxH)
+        let safeH = geometry.size.height - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom
+        let clampedH = min(cardH, safeH * 0.90)
         let clampedW = floor(clampedH / 1.4)
         return CGSize(width: clampedW, height: clampedH)
     }
@@ -118,7 +119,7 @@ struct GameView: View {
                 .frame(width: 110)
                 .padding(.vertical, 12)
             }
-            .padding(.horizontal, 12)
+            .padding(.horizontal, 8)
         }
     }
 
