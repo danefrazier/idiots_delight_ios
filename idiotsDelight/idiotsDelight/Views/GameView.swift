@@ -10,16 +10,15 @@ struct GameView: View {
     private var portraitCardSize: CGSize { CGSize(width: 75, height: 105) }
 
     private func landscapeCardSize(in geometry: GeometryProxy) -> CGSize {
-        // Fixed panels: left 140, right 130, h-padding 40, two HStack gaps 40
-        let usedWidth: CGFloat = 140 + 130 + 40 + 40
+        // Fixed panels: left 110, right 130, h-padding 40, two HStack gaps 40
+        // Header row sits above, so available height excludes it (~44pt)
+        let usedWidth: CGFloat = 110 + 130 + 40 + 40
         let availableWidth = geometry.size.width - usedWidth
-        let availableHeight = geometry.size.height - 24 // vertical padding
+        let availableHeight = geometry.size.height - 24
 
-        // Width-driven size: 4 cards with 12pt gaps
         let cardW = (availableWidth - 3 * 12) / 4
         let cardH = cardW * 1.4
 
-        // Clamp so cards don't overflow vertically
         let maxH = availableHeight * 0.85
         let clampedH = min(cardH, maxH)
         let clampedW = clampedH / 1.4
@@ -32,10 +31,21 @@ struct GameView: View {
             Color(red: 0.13, green: 0.45, blue: 0.18)
                 .ignoresSafeArea()
 
-            if isLandscape {
-                landscapeLayout
-            } else {
-                portraitLayout
+            VStack(spacing: 0) {
+                // Persistent top bar — always visible in both orientations
+                headerBar
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
+                    .padding(.bottom, 10)
+
+                Divider()
+                    .background(Color.white.opacity(0.15))
+
+                if isLandscape {
+                    landscapeLayout
+                } else {
+                    portraitLayout
+                }
             }
 
             // Ace Killer overlay (both orientations)
@@ -57,11 +67,8 @@ struct GameView: View {
 
     private var portraitLayout: some View {
         VStack(spacing: 24) {
-            headerBar
-                .padding(.top, 24)
-                .padding(.horizontal, 20)
-
             stacksRow(cardSize: portraitCardSize)
+                .padding(.top, 16)
 
             statusMessage
 
@@ -80,38 +87,15 @@ struct GameView: View {
         GeometryReader { geometry in
             HStack(spacing: 20) {
 
-                // Left panel: controls
+                // Left panel: round info, status, new game
                 VStack(alignment: .leading, spacing: 10) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Idiot's Delight")
-                            .font(.headline.bold())
-                            .foregroundColor(.white)
                         Text("Round \(game.roundNumber) of 13")
                             .font(.caption2)
                             .foregroundColor(.white.opacity(0.65))
                         Text("\(game.deck.count) cards in deck")
                             .font(.caption2)
                             .foregroundColor(.white.opacity(0.65))
-                    }
-
-                    HStack(spacing: 6) {
-                        Toggle("", isOn: $game.hintMode)
-                            .toggleStyle(.switch)
-                            .tint(.yellow)
-                            .labelsHidden()
-                            .scaleEffect(0.85)
-                        Text("Hints")
-                            .font(.caption2)
-                            .foregroundColor(.white.opacity(0.7))
-                        Spacer()
-                        Button(action: { showStats = true }) {
-                            Image(systemName: "chart.bar.fill")
-                                .foregroundColor(.white.opacity(0.75))
-                        }
-                        Button(action: { showAbout = true }) {
-                            Image(systemName: "info.circle")
-                                .foregroundColor(.white.opacity(0.75))
-                        }
                     }
 
                     Spacer()
@@ -127,7 +111,7 @@ struct GameView: View {
 
                     newGameButton
                 }
-                .frame(width: 140)
+                .frame(width: 110)
                 .padding(.vertical, 12)
 
                 // Center: stacks sized to fill available space
@@ -153,34 +137,33 @@ struct GameView: View {
     // MARK: - Shared subviews
 
     private var headerBar: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Idiot's Delight")
-                    .font(.title2.bold())
-                    .foregroundColor(.white)
-                Text("Round \(game.roundNumber) of 13  ·  \(game.deck.count) cards in deck")
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.65))
-            }
+        HStack(spacing: 8) {
+            Text("Idiot's Delight")
+                .font(.headline.bold())
+                .foregroundColor(.white)
+
             Spacer()
-            Toggle("Hints", isOn: $game.hintMode)
+
+            Toggle("", isOn: $game.hintMode)
                 .toggleStyle(.switch)
                 .tint(.yellow)
                 .labelsHidden()
+                .scaleEffect(0.85)
             Text("Hints")
                 .font(.caption)
                 .foregroundColor(.white.opacity(0.7))
+
             Button(action: { showStats = true }) {
                 Image(systemName: "chart.bar.fill")
                     .font(.title3)
                     .foregroundColor(.white.opacity(0.75))
-                    .padding(8)
+                    .padding(.horizontal, 6)
             }
             Button(action: { showAbout = true }) {
                 Image(systemName: "info.circle")
                     .font(.title3)
                     .foregroundColor(.white.opacity(0.75))
-                    .padding(8)
+                    .padding(.leading, 2)
             }
         }
     }
