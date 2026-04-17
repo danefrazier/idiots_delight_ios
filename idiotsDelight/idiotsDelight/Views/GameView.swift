@@ -4,6 +4,8 @@ struct GameView: View {
     @Bindable var game: GameState
     @State private var showStats = false
     @State private var showAbout = false
+    @State private var showHelp = false
+    @AppStorage("idiotsDelight.hasSeenWalkthrough") private var hasSeenWalkthrough = false
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     private var isLandscape: Bool { verticalSizeClass == .compact }
@@ -31,6 +33,12 @@ struct GameView: View {
                 }
             }
 
+            // First-launch walkthrough
+            if !hasSeenWalkthrough {
+                WalkthroughView(onDismiss: { hasSeenWalkthrough = true })
+                    .transition(.opacity)
+            }
+
             // Ace Killer overlay (both orientations)
             if game.showAceKillerAlert, let suit = game.aceKillerSuit {
                 AceKillerOverlay(
@@ -42,7 +50,12 @@ struct GameView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: game.showAceKillerAlert)
+        .onChange(of: game.lastMessage) { _, message in
+            guard !message.isEmpty else { return }
+            AccessibilityNotification.Announcement(message).post()
+        }
         .sheet(isPresented: $showStats) { StatsView() }
+        .sheet(isPresented: $showHelp) { HelpView() }
         .sheet(isPresented: $showAbout) { AboutView() }
     }
 
@@ -138,14 +151,16 @@ struct GameView: View {
 
             Spacer()
 
-            Toggle("", isOn: $game.hintMode)
+            Toggle("Hints", isOn: $game.hintMode)
                 .toggleStyle(.switch)
                 .tint(.yellow)
                 .labelsHidden()
                 .scaleEffect(0.85)
+                .accessibilityLabel("Hints")
             Text("Hints")
                 .font(.caption)
                 .foregroundColor(.white.opacity(0.7))
+                .accessibilityHidden(true)
 
             Button(action: { showStats = true }) {
                 Image(systemName: "chart.bar.fill")
@@ -153,12 +168,21 @@ struct GameView: View {
                     .foregroundColor(.white.opacity(0.75))
                     .padding(.horizontal, 6)
             }
+            .accessibilityLabel("Statistics")
+            Button(action: { showHelp = true }) {
+                Image(systemName: "questionmark.circle")
+                    .font(.title3)
+                    .foregroundColor(.white.opacity(0.75))
+                    .padding(.leading, 2)
+            }
+            .accessibilityLabel("Help")
             Button(action: { showAbout = true }) {
                 Image(systemName: "info.circle")
                     .font(.title3)
                     .foregroundColor(.white.opacity(0.75))
                     .padding(.leading, 2)
             }
+            .accessibilityLabel("About")
         }
     }
 

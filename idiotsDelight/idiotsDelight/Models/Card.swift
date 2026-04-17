@@ -44,6 +44,16 @@ enum CardValue: Equatable {
         case .ace:           return "A"
         }
     }
+
+    var spokenName: String {
+        switch self {
+        case .number(let n): return "\(n)"
+        case .jack:          return "Jack"
+        case .queen:         return "Queen"
+        case .king:          return "King"
+        case .ace:           return "Ace"
+        }
+    }
 }
 
 struct Card: Identifiable, Equatable {
@@ -53,4 +63,5 @@ struct Card: Identifiable, Equatable {
 
     var isAce: Bool { value == .ace }
     var displayString: String { "\(value.displayString) of \(suit.rawValue)" }
+    var accessibilityName: String { "\(value.spokenName) of \(suit.rawValue)" }
 }

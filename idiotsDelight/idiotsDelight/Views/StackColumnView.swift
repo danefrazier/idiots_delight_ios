@@ -9,11 +9,26 @@ struct StackColumnView: View {
     let cardSize: CGSize
     let onTap: () -> Void
 
+    private var buttonAccessibilityLabel: String {
+        var parts = ["Stack \(stackIndex + 1)"]
+        if let top = stack.last {
+            parts.append(top.accessibilityName)
+            parts.append("\(stack.count) card\(stack.count == 1 ? "" : "s")")
+            if isSelected    { parts.append("selected") }
+            if isHinted      { parts.append("suggested move") }
+            if isAceKiller   { parts.append("ace killer") }
+        } else {
+            parts.append("empty")
+        }
+        return parts.joined(separator: ", ")
+    }
+
     var body: some View {
         VStack(spacing: 6) {
             Text("Stack \(stackIndex + 1)")
                 .font(.caption)
                 .foregroundColor(.white.opacity(0.75))
+                .accessibilityHidden(true)
 
             Button(action: onTap) {
                 ZStack(alignment: .bottomTrailing) {
@@ -36,10 +51,12 @@ struct StackColumnView: View {
                 }
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(buttonAccessibilityLabel)
 
             Text(stack.isEmpty ? "empty" : "\(stack.count) card\(stack.count == 1 ? "" : "s")")
                 .font(.caption2)
                 .foregroundColor(isAceKiller ? .orange.opacity(0.85) : .white.opacity(0.55))
+                .accessibilityHidden(true)
         }
         .animation(.spring(duration: 0.3), value: stack.count)
     }
