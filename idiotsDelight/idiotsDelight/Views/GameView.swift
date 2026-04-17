@@ -9,20 +9,6 @@ struct GameView: View {
     private var isLandscape: Bool { verticalSizeClass == .compact }
     private var portraitCardSize: CGSize { CGSize(width: 75, height: 105) }
 
-    // geometry is the full landscape GeometryReader proxy.
-    // geo.size.width is already safe-area-constrained (VStack respects safe areas).
-    // Do NOT subtract safeAreaInsets again — that double-subtracts and shrinks cards.
-    private func landscapeCardSize(in geometry: GeometryProxy) -> CGSize {
-        // left panel + right panel + 2 HStack gaps + 2 * h-padding + 8pt buffer
-        let usedWidth: CGFloat = 100 + 110 + 32 + 16 + 8
-        let availableWidth = max(0, geometry.size.width - usedWidth)
-        let cardW = floor((availableWidth - 3 * 12) / 4)
-        let cardH = floor(cardW * 1.4)
-        let safeH = geometry.size.height - geometry.safeAreaInsets.top - geometry.safeAreaInsets.bottom
-        let clampedH = min(cardH, safeH * 0.90)
-        let clampedW = floor(clampedH / 1.4)
-        return CGSize(width: clampedW, height: clampedH)
-    }
 
     var body: some View {
         ZStack {
@@ -83,40 +69,51 @@ struct GameView: View {
 
     private var landscapeLayout: some View {
         GeometryReader { geo in
-            HStack(spacing: 16) {
+            // 6 equal columns: status | card1 | card2 | card3 | card4 | deal button
+            let colW = floor((geo.size.width - 16) / 6)  // 16pt total side buffer
+            let cardW = colW - 8  // 4pt breathing room each side within column
+            let safeH = geo.size.height - geo.safeAreaInsets.top - geo.safeAreaInsets.bottom
+            let cardH = min(floor(cardW * 1.4), floor(safeH * 0.88))
+            let cardSize = CGSize(width: cardW, height: cardH)
 
-                // Left panel: status message + new game
+            HStack(spacing: 0) {
+
+                // Status + New Game
                 VStack(alignment: .leading, spacing: 10) {
                     Spacer()
-
                     Text(game.lastMessage)
                         .font(.caption2)
                         .foregroundColor(.white.opacity(0.85))
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
                         .animation(.easeInOut(duration: 0.2), value: game.lastMessage)
-
                     Spacer()
-
                     newGameButton
                 }
-                .frame(width: 100)
+                .frame(width: colW)
                 .padding(.vertical, 12)
 
-                // Center: stacks
-                VStack(spacing: 12) {
-                    Spacer()
-                    stacksRow(cardSize: landscapeCardSize(in: geo))
-                    Spacer()
+                // 4 card columns — each identical width
+                ForEach(0..<4, id: \.self) { i in
+                    StackColumnView(
+                        stackIndex: i,
+                        stack: game.stacks[i],
+                        isSelected: game.selectedStack == i,
+                        isHinted: game.hintStackIndex == i,
+                        isAceKiller: game.aceKillerStacks.contains(i),
+                        cardSize: cardSize,
+                        onTap: { game.tapStack(i) }
+                    )
+                    .frame(width: colW)
                 }
 
-                // Right: deal button fills the panel width
+                // Deal button column
                 VStack {
                     Spacer()
                     landscapeDealButton
                     Spacer()
                 }
-                .frame(width: 110)
+                .frame(width: colW)
                 .padding(.vertical, 12)
             }
             .padding(.horizontal, 8)
