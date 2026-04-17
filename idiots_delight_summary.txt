@@ -118,16 +118,50 @@ Portrait layout unchanged.
 
 ---
 
+Session 8 — App Store Preparation
+-----------------------------------
+App icons created: three 1024×1024 variants (light, dark, tinted) using
+  the joker PNG on game-green backgrounds, generated via Pillow.
+
+Static support site built at app_support/:
+  index.html   — FAQ, contact form with mnemonic math riddle captcha,
+                 mailto: assembly in JavaScript (email not in markup).
+  privacy.html — Privacy policy: no data collected, UserDefaults only.
+  joker.png    — Joker image copied from asset catalog.
+  appstore_listing.txt — App name, subtitle, description, keywords,
+                         URLs, age rating, screenshot guidance.
+  Target URLs: https://danefrazier.com/app_support/
+               https://danefrazier.com/app_support/privacy.html
+
+Bug fixes:
+  - Ace killer stat not recording when player tapped Start Over:
+    recordAceKiller() now fires at detection time, not game end.
+    Added aceKillerCount (total encountered) to stats display.
+  - Game over transition too abrupt: added 3-second delay between
+    last play and lost phase; status shows "No further moves — game
+    over" during the pause.
+
+Signing resolved:
+  - Apple Developer account renewed and activated.
+  - Bundle ID com.danefrazier.idiotsdelight.idiotsDelight registered
+    on developer.apple.com.
+  - .gitignore added (.DS_Store, xcuserstate, DerivedData).
+  - Archive succeeded via Xcode Cloud after granting managed
+    distribution access.
+
 Current State
 -------------
+v1.0 archive built and submitted to TestFlight for internal testing.
 All features implemented and building successfully.
-No known crashes or rule violations.
 Stats persist across app launches.
 Portrait and landscape fully functional.
 About screen displays transparent joker illustration.
+Support and privacy pages ready to deploy to S3.
 
-Remaining work (not yet done):
+Remaining work:
+  - Deploy app_support/ to danefrazier.com S3 bucket.
+  - Complete TestFlight testing.
+  - Create App Store listing in App Store Connect and submit for review.
   - Card deal / removal animations beyond basic scale+opacity transition.
   - Confetti or win animation.
   - iPad layout optimisation.
-  - App Store submission.

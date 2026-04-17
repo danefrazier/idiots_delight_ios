@@ -191,11 +191,21 @@ idiotsDelight/
 - Stats persisted under UserDefaults key "idiotsDelight.gameStats".
 - Simulator target: iPhone 17, iOS 26.4 (0322476A-BB89-417A-8131-3E3141119435).
 
-16. Known Limitations / Future Work
-------------------------------------
+16. App Store Assets
+--------------------
+Support URL:      https://danefrazier.com/app_support/
+Privacy Policy:   https://danefrazier.com/app_support/privacy.html
+Bundle ID:        com.danefrazier.idiotsdelight.idiotsDelight
+Version:          1.0 (build 1)
+Category:         Games → Card
+Age Rating:       4+
+App icons:        Three 1024×1024 PNG variants in AppIcon.appiconset
+                  (light / dark / tinted), joker on game-green background.
+
+17. Known Limitations / Future Work
+-------------------------------------
 - No undo functionality.
 - No card deal animation (slide-in per stack).
 - No confetti / win animation.
 - No iPad-optimised split-view layout.
 - No iCloud sync for stats across devices.
-- No App Store submission completed.
