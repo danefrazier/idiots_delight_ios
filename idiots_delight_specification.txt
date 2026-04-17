@@ -141,15 +141,16 @@ Portrait
   "New Game" button at bottom.
 
 Landscape (verticalSizeClass == .compact)
-  Three-column HStack layout below the header.
-  Left panel (100 pt): status message (lastMessage only), New Game button.
-  Center: four stack columns sized dynamically via GeometryReader —
-    geo.size.width is already safe-area-constrained (VStack respects
-    safe areas); safe insets are NOT subtracted again.
-    card width = floor((geo.width - panels - gaps - padding - 8pt buffer
-    - card gaps) / 4), clamped to 90% of safe height, 1:1.4 ratio.
-  Right panel (110 pt): "Deal / Next / Round" button as full-width
-    rounded rectangle (not capsule), fills panel width cleanly.
+  Six equal columns below the header via GeometryReader:
+    colWidth = floor((geo.size.width - 16) / 6)
+    Column 1: status message (lastMessage) + New Game button.
+    Columns 2–5: StackColumnView for each stack, .frame(width: colW).
+    Column 6: "Deal / Next / Round" full-width rounded-rect button.
+  Card sizing:
+    cardWidth  = colWidth - 8  (4pt breathing room each side)
+    cardHeight = min(cardWidth × 1.4, safeHeight × 0.88)
+  HStack spacing = 0; all columns identical width; no overflow risk.
+  Safe area insets used only for height clamping, not width calculation.
 
 13. About Screen
 ----------------

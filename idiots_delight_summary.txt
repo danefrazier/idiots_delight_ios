@@ -212,9 +212,16 @@ Landscape card sizing root cause fixed:
     Subtracting safeAreaInsets.leading + trailing was double-subtracting,
     shrinking cards and leaving unused green space to the right of the
     Deal button. Safe area subtraction removed from card size calculation.
-  - usedWidth now: left panel + right panel + 2 gaps + 2*padding + 8pt
-    buffer. Cards now fill the available center width correctly.
   - Stack 4 label/count wrapping resolved.
+
+Landscape layout redesigned as 6 equal columns:
+  - Previous approach of fixed panel widths + calculated remainder was
+    brittle and caused Stack 3/4 label wrapping across multiple attempts.
+  - New approach: colWidth = floor((geo.size.width - 16) / 6).
+    6 columns: status | card1 | card2 | card3 | card4 | deal button.
+    cardWidth = colWidth - 8 (4pt breathing room each side).
+    HStack spacing = 0; each column carries its own .frame(width: colW).
+    All 4 stack columns are guaranteed identical width.
 
 Current State
 -------------
