@@ -80,9 +80,11 @@ suit). Aces need not be of different suits.
 
 8. Loss Conditions
 ------------------
-a. Deck runs out during "Deal Next Round" — game over immediately.
-b. No legal moves remain AND the deck is empty — game over detected
-   automatically after any action or deal.
+a. Deck runs out during "Deal Next Round" — status message shown
+   immediately; game over overlay appears after a 3-second delay.
+b. No legal moves remain AND the deck is empty — detected automatically
+   after any action or deal; status message shown immediately, overlay
+   after 3-second delay.
 
 If no legal moves remain but the deck still has cards, the game waits
 silently; the player must deal the next round.
@@ -95,10 +97,11 @@ buried — it can never be removed — making the win condition impossible
 to achieve for that suit stack.
 
 When an Ace Killer is detected:
-  - An overlay alert is displayed naming the suit.
+  - aceKillerCount stat is recorded immediately and synchronously.
+  - After a 2-second delay (to let the king card render), a transparent
+    overlay alert appears naming the suit.
   - The player may choose "Keep Playing" or "Start Over".
   - A crown badge appears on the affected stack column.
-  - The event is recorded in game statistics (hadAceKiller flag).
 
 10. Hint Mode
 -------------
@@ -118,9 +121,8 @@ A toggle switch in the header enables Hint Mode. When active:
 Tracked across all sessions (persisted via UserDefaults):
   - Total games played
   - Total wins / win percentage
-  - Best game (fewest cards remaining at loss, or 0 for a win)
-  - Total Ace Killer incidents
-  - Games with an Ace Killer that were still won
+  - Average cards remaining on loss
+  - Ace Killers Encountered (incremented at detection time)
 
 A Stats sheet (bar-chart icon in header) displays all statistics and
 offers a "Reset Stats" action with a two-button confirmation

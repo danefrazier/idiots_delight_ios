@@ -149,10 +149,34 @@ Signing resolved:
   - Archive succeeded via Xcode Cloud after granting managed
     distribution access.
 
+Session 9 — TestFlight Polish
+------------------------------
+Overlay transparency pass — all three end-of-game overlays (Win, Lose,
+  Ace Killer) made semi-transparent so cards remain visible beneath:
+  - Full-screen veil: black 55% opacity.
+  - Text card background: black 35-45% opacity.
+  - Text shadows added for legibility over the game board.
+
+Uniform 3-second delay on all end-of-game outcomes:
+  - Win: status shows "You win! Four aces." then 3s delay before overlay.
+  - Loss (no moves): "No further moves — game over", 3s delay (existing).
+  - Loss (deck empty): "No cards left — game over", 3s delay added.
+  - Ace Killer alert: 2s delay so king card renders before overlay.
+  - All delays guard against phase change (New Game during window).
+
+ContentView restructured: GameView always mounted; Win/Lose overlaid
+  via ZStack with .transition(.opacity) fade instead of view replacement.
+
+Ace Killer stats cleanup:
+  - Removed aceKillerLosses (never reliably populated at game end).
+  - Kept aceKillerCount: fires synchronously at detection time, before
+    the async delay, so it records regardless of player choice.
+
 Current State
 -------------
-v1.0 archive built and submitted to TestFlight for internal testing.
+v1.0 in TestFlight for internal testing.
 All features implemented and building successfully.
+All end-of-game transitions have delays and transparent overlays.
 Stats persist across app launches.
 Portrait and landscape fully functional.
 About screen displays transparent joker illustration.
